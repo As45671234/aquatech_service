@@ -3,104 +3,300 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AS | Web Developer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <title>Arnat Sultanbek | Digital Packaging Specialist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <button class="toggle-theme" onclick="toggleTheme()">
-    <img id="theme-icon" src="img/icon2.png" alt="Тема" />
+
+  <!-- Controls -->
+  <button class="toggle-theme" onclick="toggleTheme()" title="Toggle theme">
+    <img id="theme-icon" src="img/icon2.png" alt="Theme" />
   </button>
-  <button class="toggle-language" onclick="toggleLanguage()">
-    <span id="lang-label">EN</span>
+  <button class="toggle-language" onclick="toggleLanguage()" title="Switch language">
+    <span id="lang-label">RU</span>
   </button>
 
+  <!-- Burger Menu -->
   <div class="burger" onclick="toggleMobileNav()">
     <span></span>
     <span></span>
     <span></span>
   </div>
-  <div class="nav">
-    <a data-lang="en" href="#about">About me</a>
-    <a data-lang="ru" style="display: none;" href="#about">Обо мне</a>
-    <a data-lang="en" href="#education">Education</a>
-    <a data-lang="ru" style="display: none;" href="#education">Образование</a>
-    <a data-lang="en" href="#skills">Skills</a>
-    <a data-lang="ru" style="display: none;" href="#skills">Навыки</a>
-    <a data-lang="en" href="#projects">Projects</a>
-    <a data-lang="ru" style="display: none;" href="#projects">Проекты</a>
-    <a data-lang="en" href="#contacts">Contacts</a>
-    <a data-lang="ru" style="display: none;" href="#contacts">Контакты</a>
-  </div>
-  <div class="mobile-nav" id="mobileNav">
-    <a data-lang="en" href="#about">About me</a>
-    <a data-lang="ru" style="display: none;" href="#about">Обо мне</a>
-    <a data-lang="en" href="#education">Education</a>
-    <a data-lang="ru" style="display: none;" href="#education">Образование</a>
-    <a data-lang="en" href="#skills">Skills</a>
-    <a data-lang="ru" style="display: none;" href="#skills">Навыки</a>
-    <a data-lang="en" href="#projects">Projects</a>
-    <a data-lang="ru" style="display: none;" href="#projects">проекты</a>
-    <a data-lang="en" href="#contacts">Contacts</a>
-    <a data-lang="ru" style="display: none;" href="#contacts">Контакты</a>
-  </div>
 
-  <div class="hero">
-    <img src="img/me.jpg" alt="Фото профиля" class="profile">
-    <h1>ARNAT SULTANBEK</h1>
-    <p>WEB DEVELOPER • AITU STUDENT • CYBER ENTHUSIAST</p>
-  </div>
+  <!-- Navigation -->
+  <nav class="nav">
+    <a data-lang="en" style="display: none;" href="#about">About</a>
+    <a data-lang="ru" href="#about">О себе</a>
+    <a data-lang="en" style="display: none;" href="#services">Services</a>
+    <a data-lang="ru" href="#services">Услуги</a>
+    <a data-lang="en" style="display: none;" href="#portfolio">Portfolio</a>
+    <a data-lang="ru" href="#portfolio">Портфолио</a>
+    <a data-lang="en" style="display: none;" href="#contacts">Contacts</a>
+    <a data-lang="ru" href="#contacts">Контакты</a>
+  </nav>
 
-  <section id="about">
-    <h2 data-lang="en">About me</h2>
-    <h2 data-lang="ru" style="display: none;">Обо мне</h2>
-    <p data-lang="en">Full-stack developer with practical experience in creating and deploying commercial web applications from scratch. Successfully implemented the Vaire Department marketplace project using the Next.js, TypeScript, Prisma, and PostgreSQL stack. Skilled in both coding and configuring server environments, including Nginx and PM2. Seeking an opportunity to apply my skills in an ambitious team to solve complex problems.</p>
-    <p data-lang="ru" style="display: none;">Фуллстек-разработчик с практическим опытом создания и развертывания коммерческих веб-приложений с нуля. Успешно реализовал проект маркетплейса Vaire Department, используя стек Next.js, TypeScript, Prisma и PostgreSQL. Умею не только писать код, но и настраивать серверное окружение, включая Nginx и PM2. Ищу возможность применить свои навыки в амбициозной команде для решения сложных задач.</p>
-  </section>
-  <section id="education">
-    <h2 data-lang="en">Education</h2>
-    <h2 data-lang="ru" style="display: none;">Образование</h2>
-    <ul>
-      <li data-lang="en">Bil Taraz – Boarding Lyceum (graduate)</li>
-      <li data-lang="ru" style="display: none;">Bil Taraz – Лицей-интернат (выпускник)</li>
-      <li data-lang="en">AITU – Astana IT University - 2nd year, Computer Science</li>
-      <li data-lang="ru" style="display: none;">AITU – Astana IT University - 2 курс, Computer Science</li>
-      <li data-lang="en">Samsung Innovation Campus – Python and Big Data (certificate attached): <a href="img/Sumsung IC certificate.pdf" target="_blank">View Certificate</a></li>
-      <li data-lang="ru" style="display: none;">Samsung Innovation Campus – курс Python и Big Data (сертификат прилагается): <a href="img/Sumsung IC certificate.pdf" target="_blank">Посмотреть сертификат</a></li>
-    </ul>
+  <nav class="mobile-nav" id="mobileNav">
+    <a data-lang="en" style="display: none;" href="#about">About</a>
+    <a data-lang="ru" href="#about">О себе</a>
+    <a data-lang="en" style="display: none;" href="#services">Services</a>
+    <a data-lang="ru" href="#services">Услуги</a>
+    <a data-lang="en" style="display: none;" href="#portfolio">Portfolio</a>
+    <a data-lang="ru" href="#portfolio">Портфолио</a>
+    <a data-lang="en" style="display: none;" href="#contacts">Contacts</a>
+    <a data-lang="ru" href="#contacts">Контакты</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 data-lang="ru">Разработка сайтов и AI-контент для бизнеса в Астане</h1>
+        <h1 data-lang="en" style="display: none;">Web Development & AI Content for Business in Astana</h1>
+        
+        <p data-lang="ru">Создаю быстрые сайты на Next.js и снимаю видео, которые приводят клиентов.</p>
+        <p data-lang="en" style="display: none;">I create fast Next.js websites and shoot videos that bring clients.</p>
+        
+        <div class="hero-buttons">
+          <a href="#portfolio" class="btn btn-primary">
+            <span data-lang="ru">Смотреть портфолио</span>
+            <span data-lang="en" style="display: none;">View Portfolio</span>
+          </a>
+          <a href="https://wa.me/77766230644" class="btn btn-secondary">
+            <span data-lang="ru">Написать в WhatsApp</span>
+            <span data-lang="en" style="display: none;">Chat on WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section id="skills">
-    <h2 data-lang="en">Skills</h2>
-    <h2 data-lang="ru" style="display: none;">Навыки</h2>
-    <ul class="skills-list">
-      <li><strong>Frontend:</strong> Next.js, React, TypeScript, JavaScript, HTML, CSS, Tailwind CSS, Zod</li>
-      <li><strong>Backend:</strong> Node.js, Next.js (API Routes, Server Actions), JWT (jose), REST API</li>
-      <li><strong>Databases:</strong> PostgreSQL, Prisma ORM</li>
-      <li><strong>Tooling & DevOps:</strong> Git, GitHub, VPS, Nginx, PM2, Certbot (SSL), VS Code</li>
-      <li data-lang="en"><strong>Languages:</strong> Kazakh (native), Russian (C1), English (B1)</li>
-      <li data-lang="ru" style="display: none;"><strong>Языки:</strong> Казахский (родной), Русский (C1), Английский (B1)</li>
-    </ul>
-  </section>
-  <section id="projects">
-    <h2 data-lang="en">Projects</h2>
-    <h2 data-lang="ru" style="display: none;">Проекты</h2>
-    <ul>
-      <li><a href="https://vairegroup.kz/" target="_blank">Vaire Group</a></li>
-      <li><a href="https://as45671234.github.io/Mobile-Tau/" target="_blank">Mobile-Tau</a></li>
-      <li><a href="https://github.com/As45671234/Cantarella" target="_blank">Cantarella</a></li>
-      <li><a href="https://github.com/As45671234/3JUZ" target="_blank">3JUZ</a></li>
-    </ul>
+  <!-- ABOUT SECTION -->
+  <section id="about" class="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image">
+          <img src="img/me.jpg" alt="Arnat Sultanbek">
+        </div>
+        <div class="about-text">
+          <h2 data-lang="ru">Обо мне</h2>
+          <h2 data-lang="en" style="display: none;">About Me</h2>
+          
+          <div data-lang="ru">
+            <p>Привет! Меня зовут Арнат. Я объединяю техническую разработку и визуальный маркетинг.</p>
+            <p>Большинство делают просто «красивую картинку» или «просто код». Я делаю инструменты продаж. Мои сайты летают (благодаря современному стеку), а мои видео залетают в рекомендации (благодаря опыту в мобилографии и ИИ).</p>
+          </div>
+          <div data-lang="en" style="display: none;">
+            <p>Hi! My name is Arnat. I combine technical development and visual marketing.</p>
+            <p>Most people just make a "pretty picture" or "just code". I create sales tools. My websites fly (thanks to the modern stack), and my videos go viral (thanks to experience in mobilography and AI).</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section id="contacts">
-    <h2 data-lang="en">Contacts</h2>
-    <h2 data-lang="ru" style="display: none;">Контакты</h2>
-    <p>📍 Astana<br>
-    📧 arnatsultanbek2@gmail.com<br>
-    📱 +7 776 623 06 44<br>
-    💻 <a href="https://github.com/As45671234" target="_blank">GitHub: As45671234</a></p>
+  <!-- SERVICES SECTION -->
+  <section id="services" class="services">
+    <div class="container">
+      <h2 class="section-title" data-lang="ru">Мои услуги</h2>
+      <h2 class="section-title" data-lang="en" style="display: none;">My Services</h2>
+      
+      <div class="services-grid">
+        <!-- Card 1: Web Development -->
+        <div class="service-card">
+          <div class="service-icon">💻</div>
+          <h3 data-lang="ru">Сайты для бизнеса</h3>
+          <h3 data-lang="en" style="display: none;">Websites for Business</h3>
+          
+          <p data-lang="ru">Лендинги, Интернет-магазины, Сайты-визитки.</p>
+          <p data-lang="en" style="display: none;">Landing pages, E-commerce, Business cards.</p>
+          
+          <ul class="service-features">
+            <li data-lang="ru">Адаптация под мобильные (Mobile First)</li>
+            <li data-lang="en" style="display: none;">Mobile First Adaptation</li>
+            
+            <li data-lang="ru">SEO-оптимизация</li>
+            <li data-lang="en" style="display: none;">SEO Optimization</li>
+            
+            <li data-lang="ru">Высокая скорость (Next.js)</li>
+            <li data-lang="en" style="display: none;">High Speed (Next.js)</li>
+          </ul>
+          
+          <div class="service-price">
+            <span data-lang="ru">от 50 000 ₸</span>
+            <span data-lang="en" style="display: none;">from 50 000 ₸</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Mobilography -->
+        <div class="service-card">
+          <div class="service-icon">🎥</div>
+          <h3 data-lang="ru">Съемка Reels & TikTok</h3>
+          <h3 data-lang="en" style="display: none;">Reels & TikTok Production</h3>
+          
+          <p data-lang="ru">Профессиональная съемка контента для Instagram/TikTok в Астане.</p>
+          <p data-lang="en" style="display: none;">Professional content shooting for Instagram/TikTok in Astana.</p>
+          
+          <ul class="service-features">
+            <li data-lang="ru">Написание сценария</li>
+            <li data-lang="en" style="display: none;">Script writing</li>
+            
+            <li data-lang="ru">Монтаж и цветокоррекция</li>
+            <li data-lang="en" style="display: none;">Editing and color grading</li>
+            
+            <li data-lang="ru">Выезд к вам на точку</li>
+            <li data-lang="en" style="display: none;">On-site shooting</li>
+          </ul>
+          
+          <div class="service-price">
+            <span data-lang="ru">от 15 000 ₸ / ролик</span>
+            <span data-lang="en" style="display: none;">from 15 000 ₸ / video</span>
+          </div>
+        </div>
+
+        <!-- Card 3: AI Video -->
+        <div class="service-card premium">
+          <div class="service-icon">✨</div>
+          <h3 data-lang="ru">AI & VFX Графика</h3>
+          <h3 data-lang="en" style="display: none;">AI & VFX Graphics</h3>
+          
+          <p data-lang="ru">Создание видео, которые невозможно снять на камеру. Оживление фото, замена фона, аватары.</p>
+          <p data-lang="en" style="display: none;">Creating videos impossible to shoot on camera. Photo animation, background replacement, avatars.</p>
+          
+          <ul class="service-features">
+            <li data-lang="ru">Для тех, кто хочет выделиться</li>
+            <li data-lang="en" style="display: none;">Stand out from competitors</li>
+          </ul>
+          
+          <div class="service-price">
+            <span data-lang="ru">от 30 000 ₸</span>
+            <span data-lang="en" style="display: none;">from 30 000 ₸</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
+
+  <!-- PORTFOLIO SECTION -->
+  <section id="portfolio" class="portfolio">
+    <div class="container">
+      <h2 class="section-title" data-lang="ru">Портфолио</h2>
+      <h2 class="section-title" data-lang="en" style="display: none;">Portfolio</h2>
+      
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="sites">
+          <span data-lang="ru">Сайты</span>
+          <span data-lang="en" style="display: none;">Websites</span>
+        </button>
+        <button class="tab-btn" data-tab="video">
+          <span data-lang="ru">Видео</span>
+          <span data-lang="en" style="display: none;">Video</span>
+        </button>
+      </div>
+
+      <div class="tab-content active" id="sites">
+        <div class="portfolio-grid">
+          <!-- Portfolio Item 1 -->
+          <div class="portfolio-item">
+            <div class="portfolio-img">
+              <!-- Placeholder if image doesn't exist -->
+              <img src="img/Снимок экрана 2026-01-02 011552.png" onerror="this.src='https://placehold.co/600x400?text=Vaire+Department'" alt="Vaire Department">
+            </div>
+            <div class="portfolio-info">
+              <h3>Vaire Department</h3>
+              <a href="https://vaireservice.kz/" target="_blank" class="btn-link" data-lang="ru">Посмотреть вживую</a>
+              <a href="https://vaireservice.kz/" target="_blank" class="btn-link" data-lang="en" style="display: none;">View Live</a>
+            </div>
+          </div>
+          
+          <!-- Portfolio Item 2 -->
+          <div class="portfolio-item">
+            <div class="portfolio-img">
+              <img src="img/Снимок экрана 2026-01-02 013327.png" onerror="this.src='https://placehold.co/600x400?text=Profit+Senim'" alt="Profit Senim">
+            </div>
+            <div class="portfolio-info">
+              <h3>Profit Senim</h3>
+              <a href="https://profitsenim.kz/" target="_blank" class="btn-link" data-lang="ru">Посмотреть вживую</a>
+              <a href="https://profitsenim.kz/" target="_blank" class="btn-link" data-lang="en" style="display: none;">View Live</a>
+            </div>
+          </div>
+
+          <!-- Portfolio Item 3 -->
+          <div class="portfolio-item">
+            <div class="portfolio-img">
+              <img src="img/Снимок экрана 2026-01-02 164546.png" onerror="this.src='https://placehold.co/600x400?text=Mobile+Tau'" alt="Mobile Tau">
+            </div>
+            <div class="portfolio-info">
+              <h3>Mobile Tau</h3>
+              <a href="https://mobiletau.kz/" target="_blank" class="btn-link" data-lang="ru">Посмотреть вживую</a>
+              <a href="https://mobiletau.kz/" target="_blank" class="btn-link" data-lang="en" style="display: none;">View Live</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="video">
+        <div class="portfolio-grid">
+          <!-- AI Video -->
+          <div class="portfolio-item premium-item">
+            <div class="portfolio-video">
+              <video controls poster="img/ai-poster.jpg">
+                <source src="video/ai-video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="ai-badge">AI Generated</div>
+            </div>
+          </div>
+
+          <!-- Reel 1 -->
+          <div class="portfolio-item">
+            <div class="portfolio-video">
+              <video controls>
+                <source src="video/reel-1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+           <!-- Reel 2 -->
+           <div class="portfolio-item">
+            <div class="portfolio-video">
+              <video controls>
+                <source src="video/reel-2.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTS SECTION -->
+  <section id="contacts" class="contacts">
+    <div class="container">
+      <h2 class="section-title" data-lang="ru">Контакты</h2>
+      <h2 class="section-title" data-lang="en" style="display: none;">Contacts</h2>
+      
+      <div class="contacts-content">
+        <p data-lang="ru">Готовы обсудить проект? Напишите мне.</p>
+        <p data-lang="en" style="display: none;">Ready to discuss a project? Contact me.</p>
+        
+        <div class="social-links">
+          <a href="https://wa.me/77766230644" class="social-btn whatsapp">WhatsApp</a>
+          <a href="https://www.instagram.com/arnat.sultanbek" class="social-btn instagram">Instagram</a>
+          <a href="mailto:arnatsultanbek2@gmail.com" class="social-btn email">Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Arnat Sultanbek. All rights reserved.</p>
+    </div>
+  </footer>
+
   <script src="js.js"></script>
 </body>
 </html>
