@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог товаров | AquaTech Service</title>
+  <link rel="icon" href="img/logo2.jpeg" type="image/jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Controls -->
+  <button class="toggle-language" onclick="toggleLanguage()" title="Switch language">
+    <span id="lang-label">RU</span>
+  </button>
+
+  <!-- Burger Menu -->
+  <div class="burger" onclick="toggleMobileNav()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="index.html" data-lang="ru">На главную</a>
+    <a href="index.html" data-lang="kk" style="display:none">Басты бетке</a>
+    <a href="index.html#about" data-lang="ru">О компании</a>
+    <a href="index.html#about" data-lang="kk" style="display:none">Компания туралы</a>
+    <a href="index.html#why-us" data-lang="ru">Почему мы</a>
+    <a href="index.html#why-us" data-lang="kk" style="display:none">Неліктен біз</a>
+    <a href="index.html#contacts" data-lang="ru">Контакты</a>
+    <a href="index.html#contacts" data-lang="kk" style="display:none">Байланыс</a>
+  </nav>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="index.html" data-lang="ru">На главную</a>
+    <a href="index.html" data-lang="kk" style="display:none">Басты бетке</a>
+    <a href="index.html#about" data-lang="ru">О компании</a>
+    <a href="index.html#about" data-lang="kk" style="display:none">Компания туралы</a>
+    <a href="index.html#why-us" data-lang="ru">Почему мы</a>
+    <a href="index.html#why-us" data-lang="kk" style="display:none">Неліктен біз</a>
+    <a href="index.html#contacts" data-lang="ru">Контакты</a>
+    <a href="index.html#contacts" data-lang="kk" style="display:none">Байланыс</a>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero hero-catalog">
+    <div class="container">
+      <div class="hero-content">
+        <h1 data-lang="ru">Каталог товаров</h1>
+        <h1 data-lang="kk" style="display:none">Тауарлар каталогы</h1>
+        <p data-lang="ru">Полный выбор фильтров и систем очистки воды</p>
+        <p data-lang="kk" style="display:none">Су тазарту фильтрлері мен жүйелерінің толық таңдауы</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS CATALOG SECTION -->
+  <section id="catalog" class="products-catalog">
+    <div class="container">
+      <h2 class="section-title" data-lang="ru">Все товары и услуги</h2>
+      <h2 class="section-title" data-lang="kk" style="display:none">Барлық тауарлар мен қызметтер</h2>
+      
+      <div class="products-catalog-grid">
+        <!-- Product 1 -->
+        <div class="catalog-product-card">
+          <div class="catalog-product-image">
+            <div class="catalog-product-icon">💧</div>
+          </div>
+          <div class="catalog-product-info">
+            <h3 data-lang="ru">Система обратного осмоса</h3>
+            <h3 data-lang="kk" style="display:none">Кері осмос жүйесі</h3>
+            
+            <div class="catalog-product-features">
+              <p data-lang="ru"><strong>Полная очистка воды</strong> от всех примесей</p>
+              <p data-lang="kk" style="display:none"><strong>Барлық ластану</strong>дан суды толық тазарту</p>
+              
+              <ul>
+                <li data-lang="ru">Немецкая технология</li>
+                <li data-lang="kk" style="display:none">Герман технологиясы</li>
+                
+                <li data-lang="ru">5 ступеней очистки</li>
+                <li data-lang="kk" style="display:none">5 сатылы тазарту</li>
+                
+                <li data-lang="ru">Встроенный насос</li>
+                <li data-lang="kk" style="display:none">Ішінара орнатылған сорпы</li>
+                
+                <li data-lang="ru">Гарантия 10 лет</li>
+                <li data-lang="kk" style="display:none">10 жыл кепілдік</li>
+              </ul>
+            </div>
+            
+            <div class="catalog-product-price">от 150 000 ₸</div>
+            
+            <a href="#" class="btn btn-primary" data-lang="ru">Купить на Kaspi</a>
+            <a href="#" class="btn btn-primary" data-lang="kk" style="display:none">Kaspi-де сатып алу</a>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="catalog-product-card">
+          <div class="catalog-product-image">
+            <div class="catalog-product-icon">🚰</div>
+          </div>
+          <div class="catalog-product-info">
+            <h3 data-lang="ru">Фильтр под мойку 3-ступенчатый</h3>
+            <h3 data-lang="kk" style="display:none">Мойканың астындағы 3 сатылы фильтр</h3>
+            
+            <div class="catalog-product-features">
+              <p data-lang="ru"><strong>Компактное решение</strong> для квартиры</p>
+              <p data-lang="kk" style="display:none"><strong>Пәтер үшін ықшам шешім</strong></p>
+              
+              <ul>
+                <li data-lang="ru">Бак накопитель 8л</li>
+                <li data-lang="kk" style="display:none">8л сақтау бакасы</li>
+                
+                <li data-lang="ru">Кран двойной выход</li>
+                <li data-lang="kk" style="display:none">Екі шығысты кран</li>
+                
+                <li data-lang="ru">Легко заменяемые картриджи</li>
+                <li data-lang="kk" style="display:none">Оңай ауыстырғышы картридждер</li>
+                
+                <li data-lang="ru">Полная комплектация</li>
+                <li data-lang="kk" style="display:none">Толық комплект</li>
+              </ul>
+            </div>
+            
+            <div class="catalog-product-price">от 45 000 ₸</div>
+            
+            <a href="#" class="btn btn-primary" data-lang="ru">Купить на Kaspi</a>
+            <a href="#" class="btn btn-primary" data-lang="kk" style="display:none">Kaspi-де сатып алу</a>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="catalog-product-card">
+          <div class="catalog-product-image">
+            <div class="catalog-product-icon">🏊</div>
+          </div>
+          <div class="catalog-product-info">
+            <h3 data-lang="ru">Фильтр для воды на весь дом</h3>
+            <h3 data-lang="kk" style="display:none">Бүтін үй үшін су фильтрі</h3>
+            
+            <div class="catalog-product-features">
+              <p data-lang="ru"><strong>Очистка всей воды</strong> в доме сразу</p>
+              <p data-lang="kk" style="display:none"><strong>Үйдегі барлық су</strong>ды бірден тазарту</p>
+              
+              <ul>
+                <li data-lang="ru">Магистральная система</li>
+                <li data-lang="kk" style="display:none">Магистральді жүйе</li>
+                
+                <li data-lang="ru">Профессиональный монтаж</li>
+                <li data-lang="kk" style="display:none">Кәсіби орнату</li>
+                
+                <li data-lang="ru">Долговечность 10+ лет</li>
+                <li data-lang="kk" style="display:none">10+ жыл ұзақ ӘҚ</li>
+                
+                <li data-lang="ru">Гарантия 3 года</li>
+                <li data-lang="kk" style="display:none">3 жыл кепілдік</li>
+              </ul>
+            </div>
+            
+            <div class="catalog-product-price">от 280 000 ₸</div>
+            
+            <a href="#" class="btn btn-primary" data-lang="ru">Купить на Kaspi</a>
+            <a href="#" class="btn btn-primary" data-lang="kk" style="display:none">Kaspi-де сатып алу</a>
+          </div>
+        </div>
+
+        <!-- Service 1 -->
+        <div class="catalog-product-card service">
+          <div class="catalog-product-image">
+            <div class="catalog-product-icon">🔧</div>
+          </div>
+          <div class="catalog-product-info">
+            <h3 data-lang="ru">Установка системы</h3>
+            <h3 data-lang="kk" style="display:none">Жүйені орнату</h3>
+            
+            <div class="catalog-product-features">
+              <p data-lang="ru"><strong>Профессиональный монтаж</strong> любой сложности</p>
+              <p data-lang="kk" style="display:none"><strong>Кәсіби құрылым</strong> кез келген күрделіліктің</p>
+              
+              <ul>
+                <li data-lang="ru">Проверка герметичности</li>
+                <li data-lang="kk" style="display:none">Герметиктік тексеру</li>
+                
+                <li data-lang="ru">Регулировка давления</li>
+                <li data-lang="kk" style="display:none">Қысым реттелуі</li>
+                
+                <li data-lang="ru">Консультация по использованию</li>
+                <li data-lang="kk" style="display:none">Пайдалану бойынша консультация</li>
+              </ul>
+            </div>
+            
+            <div class="catalog-product-price">от 30 000 ₸</div>
+            
+            <a href="https://wa.me/77766230644" class="btn btn-secondary" target="_blank" data-lang="ru">Связаться</a>
+            <a href="https://wa.me/77766230644" class="btn btn-secondary" target="_blank" data-lang="kk" style="display:none">Байланыс</a>
+          </div>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="catalog-product-card service">
+          <div class="catalog-product-image">
+            <div class="catalog-product-icon">🔄</div>
+          </div>
+          <div class="catalog-product-info">
+            <h3 data-lang="ru">Плановое ТО и замена картриджей</h3>
+            <h3 data-lang="kk" style="display:none">Жоспарлау ТО және картридждерді ауыстыру</h3>
+            
+            <div class="catalog-product-features">
+              <p data-lang="ru"><strong>Регулярное обслуживание</strong> фильтра</p>
+              <p data-lang="kk" style="display:none"><strong>Фильтрдің ұдайы қызмет көрсетілуі</strong></p>
+              
+              <ul>
+                <li data-lang="ru">9-12 месяцев при средней жёсткости</li>
+                <li data-lang="kk" style="display:none">Орташа қатаңдықта 9-12 ай</li>
+                
+                <li data-lang="ru">6-8 месяцев при высокой жёсткости</li>
+                <li data-lang="kk" style="display:none">Жоғары қатаңдықта 6-8 ай</li>
+                
+                <li data-lang="ru">Напоминаем о замене</li>
+                <li data-lang="kk" style="display:none">Ауыстыру туралы еске салау</li>
+              </ul>
+            </div>
+            
+            <div class="catalog-product-price">от 15 000 ₸</div>
+            
+            <a href="https://wa.me/77766230644" class="btn btn-secondary" target="_blank" data-lang="ru">Связаться</a>
+            <a href="https://wa.me/77766230644" class="btn btn-secondary" target="_blank" data-lang="kk" style="display:none">Байланыс</a>
+          </div>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="catalog-product-card service">
+          <div class="catalog-product-image">
+            <div class="catalog-product-icon">📊</div>
+          </div>
+          <div class="catalog-product-info">
+            <h3 data-lang="ru">Анализ воды</h3>
+            <h3 data-lang="kk" style="display:none">Су талдауы</h3>
+            
+            <div class="catalog-product-features">
+              <p data-lang="ru"><strong>Лабораторный анализ</strong> перед подбором</p>
+              <p data-lang="kk" style="display:none"><strong>Таңдаудан бұрын лабораториялық</strong> талдау</p>
+              
+              <ul>
+                <li data-lang="ru">Жёсткость воды</li>
+                <li data-lang="kk" style="display:none">Су қатаңдығы</li>
+                
+                <li data-lang="ru">Содержание железа, хлора, pH</li>
+                <li data-lang="kk" style="display:none">Темір, хлор, pH құрамы</li>
+                
+                <li data-lang="ru">Результаты за 1 день</li>
+                <li data-lang="kk" style="display:none">Нәтижелер 1 күндік</li>
+              </ul>
+            </div>
+            
+            <div class="catalog-product-price">5 000 ₸</div>
+            
+            <a href="https://wa.me/77766230644" class="btn btn-secondary" target="_blank" data-lang="ru">Связаться</a>
+            <a href="https://wa.me/77766230644" class="btn btn-secondary" target="_blank" data-lang="kk" style="display:none">Байланыс</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTS SECTION -->
+  <section id="contacts" class="contacts">
+    <div class="container">
+      <h2 class="section-title" data-lang="ru">Контакты</h2>
+      <h2 class="section-title" data-lang="kk" style="display:none">Байланыс</h2>
+      
+      <div class="contacts-content">
+        <p data-lang="ru">Готовы обсудить проект? Напишите мне.</p>
+        <p data-lang="kk" style="display:none">Жобаны талқылайық па? Маған жазыңыз.</p>
+        
+        <div class="social-links">
+          <a href="https://wa.me/77766230644" class="social-btn whatsapp">WhatsApp</a>
+          <a href="https://www.instagram.com/aquatech_service" class="social-btn instagram">Instagram</a>
+          <a href="mailto:info@aquatech.kz" class="social-btn email">Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 AquaTech Service. Все права защищены.</p>
+    </div>
+  </footer>
+
+  <script src="js.js"></script>
+</body>
+</html>
