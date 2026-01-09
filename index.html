@@ -11,12 +11,12 @@
 <body>
 
   <!-- Controls -->
-  <button class="toggle-language" onclick="toggleLanguage()" title="Switch language">
+  <button class="toggle-language" onclick="toggleLanguage()" title="Switch language" aria-label="Переключить язык / Тілді ауыстыру" aria-pressed="false">
     <span id="lang-label">RU</span>
   </button>
 
   <!-- Burger Menu -->
-  <div class="burger" onclick="toggleMobileNav()">
+  <div class="burger" onclick="toggleMobileNav()" role="button" tabindex="0" aria-label="Меню навигации" aria-expanded="false" aria-controls="mobileNav">
     <span></span>
     <span></span>
     <span></span>
@@ -48,40 +48,118 @@
   <!-- HERO SECTION -->
   <section class="hero">
     <div class="container">
-      <div class="hero-content">
+      <!-- Desktop Version -->
+      <div class="hero-content hero-desktop">
+        <div class="hero-left">
+          <div class="brand-badge">
+            <img src="img/logo2.jpeg" alt="AquaTech Service" class="brand-badge__logo">
+            <div class="brand-badge__text">
+              <strong>AQUATECH SERVICE</strong>
+              <span data-lang="ru">Профессиональные системы очистки воды</span>
+              <span data-lang="kk" style="display:none">Кәсіби су тазарту жүйелері</span>
+            </div>
+          </div>
+          <h1 data-lang="ru">Чистая вода под ключ — с гарантией результата</h1>
+          <h1 data-lang="kk" style="display:none">Таза су толық орнатумен — нәтижеге кепілдікпен</h1>
+          
+          <p data-lang="ru" class="hero-services">Подбор • Установка • Сервис • Поддержка</p>
+          <p data-lang="kk" style="display:none" class="hero-services">Таңдау • Орнату • Сервис • Қолдау</p>
+          
+          <div class="hero-buttons">
+            <a href="#products" class="btn btn-primary">
+              <span data-lang="ru">Подобрать фильтр</span>
+              <span data-lang="kk" style="display:none">Фильтр таңдау</span>
+            </a>
+            <a href="https://wa.me/77766230644" class="btn btn-secondary">
+              <span data-lang="ru">Бесплатная консультация</span>
+              <span data-lang="kk" style="display:none">Тегін кеңес</span>
+            </a>
+          </div>
+        </div>
+        
+        <div class="hero-right">
+          <div class="carousel-wrap">
+            <div class="employees-carousel" id="employeesCarousel">
+            <div class="employee-card"><img src="img/employee/г. Астана директор.png" alt="Астана директор"><div class="employee-city">Астана директор</div></div>
+            <div class="employee-card"><img src="img/employee/г.Астана готовый.png" alt="Астана"><div class="employee-city">Астана</div></div>
+            <div class="employee-card"><img src="img/employee/г.Алматы.png" alt="Алматы"><div class="employee-city">Алматы</div></div>
+            <div class="employee-card"><img src="img/employee/г.Атырау готовый.png" alt="Атырау"><div class="employee-city">Атырау</div></div>
+            <div class="employee-card"><img src="img/employee/г.Актау готовый.png" alt="Актау"><div class="employee-city">Актау</div></div>
+            <div class="employee-card"><img src="img/employee/г.Актобе готовый.png" alt="Актобе"><div class="employee-city">Актобе</div></div>
+            <div class="employee-card"><img src="img/employee/г.Орал готовый.JPG" alt="Орал"><div class="employee-city">Орал</div></div>
+            <div class="employee-card"><img src="img/employee/г.Кызылорда готовый.png" alt="Кызылорда"><div class="employee-city">Кызылорда</div></div>
+            <div class="employee-card"><img src="img/employee/г.Шымкент.png" alt="Шымкент"><div class="employee-city">Шымкент</div></div>
+            <div class="employee-card"><img src="img/employee/г.Туркестан готовый.png" alt="Туркестан"><div class="employee-city">Туркестан</div></div>
+            <div class="employee-card"><img src="img/employee/г.Тараз готовый.JPG" alt="Тараз"><div class="employee-city">Тараз</div></div>
+            <div class="employee-card"><img src="img/employee/г.Талдыкорган.png" alt="Талдыкорган"><div class="employee-city">Талдыкорган</div></div>
+            <div class="employee-card"><img src="img/employee/г.Караганда готовый.png" alt="Караганды"><div class="employee-city">Караганды</div></div>
+            <div class="employee-card"><img src="img/employee/г.Жезказган.png" alt="Жезказган"><div class="employee-city">Жезказган</div></div>
+            <div class="employee-card"><img src="img/employee/г.Кокшетау.png" alt="Кокшетау"><div class="employee-city">Кокшетау</div></div>
+            <div class="employee-card"><img src="img/employee/г.Павлодар.PNG" alt="Павлодар"><div class="employee-city">Павлодар</div></div>
+            <div class="employee-card"><img src="img/employee/г.Устькаменогорск .png" alt="Устькаменогорск"><div class="employee-city">Устькаменогорск</div></div>
+            </div>
+            <div class="carousel-nav">
+              <button class="carousel-arrow prev" aria-label="Предыдущие" onclick="scrollEmployees(-1)">‹</button>
+              <button class="carousel-arrow next" aria-label="Следующие" onclick="scrollEmployees(1)">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Version -->
+      <div class="hero-content hero-mobile">
         <div class="brand-badge">
           <img src="img/logo2.jpeg" alt="AquaTech Service" class="brand-badge__logo">
           <div class="brand-badge__text">
             <strong>AQUATECH SERVICE</strong>
-            <span data-lang="ru">Система обратного осмоса</span>
-            <span data-lang="kk" style="display:none">Кері осмос жүйесі</span>
+            <span data-lang="ru">Профессиональные системы очистки воды</span>
+            <span data-lang="kk" style="display:none">Кәсіби су тазарту жүйелері</span>
           </div>
         </div>
-        <h1 data-lang="ru">Чистая вода — под ключ</h1>
-        <h1 data-lang="kk" style="display:none">Таза су — толық орнатумен</h1>
-        
-        <p data-lang="ru">Подбор, установка и сервис фильтров воды</p>
-        <p data-lang="kk" style="display:none">Су сүзгілерін таңдау, орнату және сервис</p>
-        
-        <p class="hero-subtitle" data-lang="ru">Мы не просто продаём фильтры — мы берём ответственность за качество вашей воды на годы вперёд.</p>
-        <p class="hero-subtitle" data-lang="kk" style="display:none">Біз тек фильтр сатпаймыз — суыңыздың сапасына жылдар бойы жауап береміз.</p>
+        <h1 data-lang="ru">Чистая вода под ключ — с гарантией результата</h1>
+        <h1 data-lang="kk" style="display:none">Таза су толық орнатумен — нәтижеге кепілдікпен</h1>
         
         <div class="hero-buttons">
           <a href="#products" class="btn btn-primary">
-            <span data-lang="ru">Посмотреть товары</span>
-            <span data-lang="kk" style="display:none">Тауарларды көру</span>
+            <span data-lang="ru">Каталог</span>
+            <span data-lang="kk" style="display:none">Каталог</span>
           </a>
           <a href="https://wa.me/77766230644" class="btn btn-secondary">
-            <span data-lang="ru">Консультация</span>
-            <span data-lang="kk" style="display:none">Кеңес алу</span>
+            <span data-lang="ru">WhatsApp</span>
+            <span data-lang="kk" style="display:none">WhatsApp</span>
           </a>
         </div>
-        
-        <div class="hero-tags">
-          <span>Подбор</span>
-          <span>Установка</span>
-          <span>Гарантия</span>
-          <span>Техподдержка</span>
+      </div>
+    </div>
+  </section>
+  <!-- EMPLOYEES SECTION (Mobile Only) -->
+  <section class="employees-section">
+    <div class="container">
+      <h2 class="section-title" data-lang="ru">Наши специалисты</h2>
+      <h2 class="section-title" data-lang="kk" style="display:none">Біздің мамандар</h2>
+      <div class="employees-mobile-wrap">
+        <div class="employees-scroll-mobile" id="employeesMobileCarousel">
+          <div class="employee-card"><img src="img/employee/г. Астана директор.png" alt="Астана директор"><div class="employee-city">Астана директор</div></div>
+          <div class="employee-card"><img src="img/employee/г.Астана готовый.png" alt="Астана"><div class="employee-city">Астана</div></div>
+          <div class="employee-card"><img src="img/employee/г.Алматы.png" alt="Алматы"><div class="employee-city">Алматы</div></div>
+          <div class="employee-card"><img src="img/employee/г.Атырау готовый.png" alt="Атырау"><div class="employee-city">Атырау</div></div>
+          <div class="employee-card"><img src="img/employee/г.Актау готовый.png" alt="Актау"><div class="employee-city">Актау</div></div>
+          <div class="employee-card"><img src="img/employee/г.Актобе готовый.png" alt="Актобе"><div class="employee-city">Актобе</div></div>
+          <div class="employee-card"><img src="img/employee/г.Орал готовый.JPG" alt="Орал"><div class="employee-city">Орал</div></div>
+          <div class="employee-card"><img src="img/employee/г.Кызылорда готовый.png" alt="Кызылорда"><div class="employee-city">Кызылорда</div></div>
+          <div class="employee-card"><img src="img/employee/г.Шымкент.png" alt="Шымкент"><div class="employee-city">Шымкент</div></div>
+          <div class="employee-card"><img src="img/employee/г.Туркестан готовый.png" alt="Туркестан"><div class="employee-city">Туркестан</div></div>
+          <div class="employee-card"><img src="img/employee/г.Тараз готовый.JPG" alt="Тараз"><div class="employee-city">Тараз</div></div>
+          <div class="employee-card"><img src="img/employee/г.Талдыкорган.png" alt="Талдыкорган"><div class="employee-city">Талдыкорган</div></div>
+          <div class="employee-card"><img src="img/employee/г.Караганда готовый.png" alt="Караганды"><div class="employee-city">Караганды</div></div>
+          <div class="employee-card"><img src="img/employee/г.Жезказган.png" alt="Жезказган"><div class="employee-city">Жезказган</div></div>
+          <div class="employee-card"><img src="img/employee/г.Кокшетау.png" alt="Кокшетау"><div class="employee-city">Кокшетау</div></div>
+          <div class="employee-card"><img src="img/employee/г.Павлодар.PNG" alt="Павлодар"><div class="employee-city">Павлодар</div></div>
+          <div class="employee-card"><img src="img/employee/г.Устькаменогорск .png" alt="Устькаменогорск"><div class="employee-city">Устькаменогорск</div></div>
+        </div>
+        <div class="carousel-nav mobile">
+          <button class="carousel-arrow prev mobile" aria-label="Предыдущие" onclick="scrollEmployeesMobile(-1)">‹</button>
+          <button class="carousel-arrow next mobile" aria-label="Следующие" onclick="scrollEmployeesMobile(1)">›</button>
         </div>
       </div>
     </div>
@@ -99,12 +177,21 @@
           <h2 data-lang="kk" style="display:none">AquaTech туралы</h2>
           
           <div data-lang="ru">
-            <p>Мы специализируемся на подборе, установке и сервисном обслуживании систем фильтрации воды для жилых и коммерческих объектов.</p>
-            <p>Каждая система подбирается индивидуально на основе анализа воды. Мы гарантируем профессиональную установку и постоянную поддержку.</p>
+            <p>Фильтры для воды с сервисным обслуживанием по регламенту.<br> Мы не просто продаём фильтр — мы отвечаем за воду у вас дома.</p>
+            <p>Без "чудо-картриджей" и маркетинговых сказок — только реальные показатели воды:</p>
+            <ul class="about-features">
+              <li>Показываем воду до и после фильтрации</li>
+              <li>Честно объясняем, что фильтр делает, а что — нет</li>
+            </ul>
           </div>
           <div data-lang="kk" style="display:none">
-            <p>Біз тұрғын және коммерциялық нысандарға арналған су тазарту жүйелерін таңдау, орнату және сервистік қызмет көрсетумен айналысамыз.</p>
-            <p>Әр жүйе су талдауына сүйене отырып жеке таңдалады. Кәсіби орнатуға және тұрақты қолдауға кепілдік береміз.</p>
+            <p>Су сүзгілері үзілді сервистік қызметпен реламентке сәйкес.</p>
+            <p>Біз тек сүзгі сатпаймыз — сіздің үйіңіздегі су сапасына жауап береміз.</p>
+            <p><strong>"Сыйуы сүзгілері" және маркетингтік сказкалары құрамында — тек нақты су көрсеткіштері:</strong></p>
+            <ul class="about-features">
+              <li>Су сүзгілеуден бұрын және сүзгілеген сонсоң көрсетеміз</li>
+              <li>Сүзгі не істейтінін және не істемейтінін ішінара түсіндіреміз</li>
+            </ul>
           </div>
         </div>
       </div>
