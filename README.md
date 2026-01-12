@@ -76,7 +76,7 @@ npx http-server
 
 ## Ссылки для редактирования
 
-- **WhatsApp**: https://wa.me/77766230644
+- **WhatsApp**: https://wa.me/77757509415
 - **Instagram**: https://www.instagram.com/aquatech_service
 - **Email**: info@aquatech.kz
 
