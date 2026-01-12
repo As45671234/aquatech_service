@@ -168,10 +168,12 @@ function enableLazyLoadingForProductImages() {
 function initProductGalleries() {
   document.querySelectorAll('.product-gallery').forEach(gallery => {
     let imagesStr = gallery.getAttribute('data-images');
-    if (!imagesStr) {
+    const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
+    
+    if (!imagesStr || imagesStr.trim() === '') {
+      // Fallback для галерей без data-images атрибута
       const slidesFallback = Array.from(gallery.querySelectorAll('.gallery-slide'));
-      const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
-
+      
       slidesFallback.forEach((slide, idx) => {
         slide.classList.toggle('active', idx === 0);
       });
@@ -185,12 +187,14 @@ function initProductGalleries() {
           dotsContainer.appendChild(dot);
         });
       }
+      
+      // Добавить свайп
+      addSwipeSupport(gallery);
       return;
     }
     
     const images = imagesStr.split(',').map(img => img.trim());
     const slides = gallery.querySelectorAll('.gallery-slide');
-    const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
     const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
     
     // Load images into slides
@@ -262,40 +266,137 @@ function initProductGalleries() {
         }
       });
     }
+
+    // Добавить свайп
+    addSwipeSupport(gallery);
+  });
+}
+
+function getCurrentSlideIndex(gallery) {
+  let currentIndex = 0;
+  gallery.querySelectorAll('.gallery-slide').forEach((slide, index) => {
+    if (slide.classList.contains('active')) {
+      currentIndex = index;
+    }
+  });
+  return currentIndex;
+}
+
+function setActiveSlide(gallery, dotsContainer, newIndex) {
+  const slides = gallery.querySelectorAll('.gallery-slide');
+  const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
+  if (!slides.length) return;
+
+  const normalizedIndex = ((newIndex % slides.length) + slides.length) % slides.length;
+
+  slides.forEach((slide, idx) => {
+    slide.classList.toggle('active', idx === normalizedIndex);
+  });
+
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === normalizedIndex);
   });
 }
 
 function changeSlide(button, direction) {
   const gallery = button.closest('.gallery-controls').previousElementSibling;
-  const slides = gallery.querySelectorAll('.gallery-slide');
   const dotsContainer = button.closest('.catalog-product-image').querySelector('.gallery-dots');
-  const dots = dotsContainer.querySelectorAll('.dot');
-  
-  let currentIndex = 0;
-  slides.forEach((slide, index) => {
-    if (slide.classList.contains('active')) {
-      currentIndex = index;
-    }
-  });
-  
-  let newIndex = (currentIndex + direction + slides.length) % slides.length;
-  
-  slides.forEach(slide => slide.classList.remove('active'));
-  dots.forEach(dot => dot.classList.remove('active'));
-  
-  slides[newIndex].classList.add('active');
-  dots[newIndex].classList.add('active');
+  const currentIndex = getCurrentSlideIndex(gallery);
+  setActiveSlide(gallery, dotsContainer, currentIndex + direction);
 }
 
 function currentSlide(dot, index) {
   const dotsContainer = dot.parentElement;
   const gallery = dotsContainer.previousElementSibling;
-  const slides = gallery.querySelectorAll('.gallery-slide');
-  const dots = dotsContainer.querySelectorAll('.dot');
-  
-  slides.forEach(slide => slide.classList.remove('active'));
-  dots.forEach(d => d.classList.remove('active'));
-  
-  slides[index].classList.add('active');
-  dots[index].classList.add('active');
+  setActiveSlide(gallery, dotsContainer, index);
+}
+
+function addSwipeSupport(gallery) {
+  const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
+  let startX = 0;
+  let startY = 0;
+   let lastX = 0;
+   let lastY = 0;
+  let isPointerActive = false;
+  const swipeThreshold = 25;
+
+  const handleStart = (x, y) => {
+    startX = x;
+    startY = y;
+    lastX = x;
+    lastY = y;
+    isPointerActive = true;
+  };
+
+  const handleMove = (x, y) => {
+    if (!isPointerActive) return;
+    lastX = x;
+    lastY = y;
+  };
+
+  const handleEnd = (x, y) => {
+    if (!isPointerActive) return;
+    isPointerActive = false;
+
+    const deltaX = (x ?? lastX) - startX;
+    const deltaY = (y ?? lastY) - startY;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+      const currentIndex = getCurrentSlideIndex(gallery);
+      const direction = deltaX > 0 ? -1 : 1;
+      setActiveSlide(gallery, dotsContainer, currentIndex + direction);
+    }
+  };
+
+  if ('PointerEvent' in window) {
+    gallery.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      handleStart(e.clientX, e.clientY);
+      if (gallery.setPointerCapture) {
+        gallery.setPointerCapture(e.pointerId);
+      }
+    });
+
+    gallery.addEventListener('pointermove', (e) => {
+      handleMove(e.clientX, e.clientY);
+    });
+
+    gallery.addEventListener('pointerup', (e) => {
+      handleEnd(e.clientX, e.clientY);
+      if (gallery.releasePointerCapture) {
+        gallery.releasePointerCapture(e.pointerId);
+      }
+    });
+
+    gallery.addEventListener('pointercancel', () => {
+      handleEnd(lastX, lastY);
+    });
+    gallery.addEventListener('pointerleave', () => {
+      handleEnd(lastX, lastY);
+    });
+  } else {
+    gallery.addEventListener('touchstart', (e) => {
+      if (!e.changedTouches.length) return;
+      const touch = e.changedTouches[0];
+      handleStart(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    gallery.addEventListener('touchmove', (e) => {
+      if (!e.changedTouches.length) return;
+      const touch = e.changedTouches[0];
+      handleMove(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    gallery.addEventListener('touchend', (e) => {
+      if (!e.changedTouches.length) return;
+      const touch = e.changedTouches[0];
+      handleEnd(touch.clientX, touch.clientY);
+    }, { passive: true });
+  }
+
+  // Disable native drag on images so swipe works with mouse drag
+  gallery.querySelectorAll('img').forEach(img => {
+    img.setAttribute('draggable', 'false');
+    img.addEventListener('dragstart', (evt) => evt.preventDefault());
+  });
 }

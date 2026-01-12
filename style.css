@@ -1971,7 +1971,7 @@ footer {
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .catalog-product-image::before {
@@ -2009,6 +2009,13 @@ footer {
   height: 100%;
   overflow: hidden;
   border-radius: 20px;
+  background: linear-gradient(135deg, #2E8DB5 0%, #5DADE2 100%);
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+}
+
+.product-gallery::-webkit-scrollbar {
+  display: none;
 }
 
 .gallery-slide {
@@ -2018,7 +2025,6 @@ footer {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2E8DB5 0%, #5DADE2 100%);
 }
 
 .gallery-slide.active {
@@ -2327,4 +2333,54 @@ footer {
     height: 7px;
     border-width: 1px;
   }
+}
+
+/* ==================== INFO SECTION ==================== */
+.info-section {
+  padding: 5rem 0;
+  background: var(--card-bg);
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.info-card {
+  background: var(--bg-color);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-color);
+}
+
+.info-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.info-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.info-card p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 0.95rem;
 }
