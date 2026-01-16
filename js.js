@@ -107,6 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // ==================== PRODUCT GALLERIES ====================
   initProductGalleries();
+
+  // ==================== LIGHTBOX ====================
+  initLightbox();
 });
 
 function initEmployeesCarousel() {
@@ -164,239 +167,448 @@ function enableLazyLoadingForProductImages() {
     img.setAttribute('decoding', 'async');
   });
 }
-// ==================== PRODUCT GALLERY ==================== 
+// ==================== PRODUCT GALLERY & LIGHTBOX SYSTEM ====================
+// Consolidated system for managing product galleries, swiping, and lightbox 
+
+// State variables
+let lightbox, lightboxImg, closeBtn;
+let currentLightboxImages = [];
+let currentLightboxIndex = 0;
+
 function initProductGalleries() {
-  document.querySelectorAll('.product-gallery').forEach(gallery => {
+    // 1. Initialize DOM for all galleries
+    document.querySelectorAll('.product-gallery').forEach(gallery => {
+        setupGalleryDOM(gallery);
+        setupGalleryInteraction(gallery);
+    });
+
+    // 2. Initialize Lightbox if not already present
+    if (!document.getElementById('lightbox')) {
+        setupLightboxDOM();
+    }
+}
+
+
+function setupGalleryDOM(gallery) {
     let imagesStr = gallery.getAttribute('data-images');
     const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
-    
-    if (!imagesStr || imagesStr.trim() === '') {
-      // Fallback для галерей без data-images атрибута
-      const slidesFallback = Array.from(gallery.querySelectorAll('.gallery-slide'));
-      
-      slidesFallback.forEach((slide, idx) => {
-        slide.classList.toggle('active', idx === 0);
-      });
 
-      if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        slidesFallback.forEach((_, idx) => {
-          const dot = document.createElement('span');
-          dot.className = 'dot' + (idx === 0 ? ' active' : '');
-          dot.onclick = function() { currentSlide(this, idx); };
-          dotsContainer.appendChild(dot);
+    // If data-images is missing or empty, handle existing DOM
+    if (!imagesStr || imagesStr.trim() === '') {
+        const slidesFallback = Array.from(gallery.querySelectorAll('.gallery-slide'));
+        slidesFallback.forEach((slide, idx) => {
+            slide.classList.toggle('active', idx === 0);
+            const img = slide.querySelector('img');
+            if(img) img.style.cursor = 'zoom-in';
         });
-      }
-      
-      // Добавить свайп
-      addSwipeSupport(gallery);
-      return;
+
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            slidesFallback.forEach((_, idx) => {
+                const dot = document.createElement('span');
+                dot.className = 'dot' + (idx === 0 ? ' active' : '');
+                dot.onclick = (e) => {
+                    e.stopPropagation();
+                    currentSlide(dot, idx);
+                };
+                dotsContainer.appendChild(dot);
+            });
+        }
+        return;
     }
-    
+
+    // Process data-images
     const images = imagesStr.split(',').map(img => img.trim());
     const slides = gallery.querySelectorAll('.gallery-slide');
     const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
-    
-    // Load images into slides
+
+    // Load images
     slides.forEach((slide, index) => {
-      const img = slide.querySelector('img');
-      if (img && images[index]) {
-        img.src = 'img/product/' + images[index];
-      }
+        const img = slide.querySelector('img');
+        if (img && images[index]) {
+            img.src = 'img/product/' + images[index];
+            img.style.cursor = 'zoom-in';
+        }
     });
-    
-    // Adjust number of dots and slides
+
+    // Adjust dots
     const dotsNeeded = images.length;
     if (dots.length < dotsNeeded) {
-      for (let i = dots.length; i < dotsNeeded; i++) {
-        const newDot = document.createElement('span');
-        newDot.className = 'dot';
-        newDot.onclick = function() { currentSlide(this, i); };
-        dotsContainer.appendChild(newDot);
-      }
+        for (let i = dots.length; i < dotsNeeded; i++) {
+            const newDot = document.createElement('span');
+            newDot.className = 'dot';
+            newDot.onclick = (e) => {
+                e.stopPropagation();
+                currentSlide(newDot, i);
+            };
+            dotsContainer.appendChild(newDot);
+        }
     } else if (dots.length > dotsNeeded) {
-      for (let i = dotsNeeded; i < dots.length; i++) {
-        dots[i].remove();
-      }
+        for (let i = dotsNeeded; i < dots.length; i++) {
+            dots[i].remove();
+        }
     }
-    
+
     // Add extra slides if needed
     if (slides.length < dotsNeeded) {
-      for (let i = slides.length; i < dotsNeeded; i++) {
-        const newSlide = document.createElement('div');
-        newSlide.className = 'gallery-slide';
-        const img = document.createElement('img');
-        img.src = 'img/product/' + images[i];
-        img.alt = 'Product image ' + (i + 1);
-        newSlide.appendChild(img);
-        gallery.appendChild(newSlide);
-      }
+        for (let i = slides.length; i < dotsNeeded; i++) {
+            const newSlide = document.createElement('div');
+            newSlide.className = 'gallery-slide';
+            const img = document.createElement('img');
+            img.src = 'img/product/' + images[i];
+            img.alt = 'Product image ' + (i + 1);
+            img.style.cursor = 'zoom-in';
+            newSlide.appendChild(img);
+            gallery.appendChild(newSlide);
+        }
     }
-    
-    // Show first slide
+
+    // Initialize state
     const allSlides = gallery.querySelectorAll('.gallery-slide');
     const allDots = dotsContainer.querySelectorAll('.dot');
-    
+
     allSlides.forEach(s => s.classList.remove('active'));
     allDots.forEach(d => d.classList.remove('active'));
+
+    if (allSlides.length > 0) allSlides[0].classList.add('active');
+    if (allDots.length > 0) allDots[0].classList.add('active');
+}
+
+function setupGalleryInteraction(gallery) {
+    const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
     
-    if (allSlides.length > 0) {
-      allSlides[0].classList.add('active');
-    }
-    if (allDots.length > 0) {
-      allDots[0].classList.add('active');
-    }
+    // Pointer/Touch Logic for Swipe & Tap
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+    let isPointerDown = false;
     
-    // Keyboard support for gallery navigation
+    // Prevent native drag
+    gallery.querySelectorAll('img').forEach(img => {
+        img.ondragstart = () => false;
+    });
+
+    const onPointerDown = (e) => {
+        // Only left click or touch
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        
+        isPointerDown = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startTime = Date.now();
+        
+        // Ensure we capture pointer for swiping
+        if (gallery.setPointerCapture) {
+            gallery.setPointerCapture(e.pointerId);
+        }
+    };
+
+    const onPointerUp = (e) => {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+        
+        // Release capture
+        if (gallery.releasePointerCapture) {
+            gallery.releasePointerCapture(e.pointerId);
+        }
+
+        const endX = e.clientX;
+        const endY = e.clientY;
+        const diffX = startX - endX;
+        const diffY = startY - endY;
+        const duration = Date.now() - startTime;
+        
+        // Detect click/tap (minimal movement, short duration)
+        // Increased tolerance for "tap" detection to fix user reports of unclickable images
+        if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && duration < 500) {
+            // It's a tap - Open Lightbox
+            // Find currently active image src
+            const activeSlide = gallery.querySelector('.gallery-slide.active img');
+            if (activeSlide) {
+                openLightbox(activeSlide.src, gallery); // Pass gallery info for navigation
+            }
+            return;
+        }
+
+        // Detect Horizontal Swipe
+        if (Math.abs(diffX) > 30 && Math.abs(diffX) > Math.abs(diffY)) {
+            const direction = diffX > 0 ? 1 : -1; // 1 = next, -1 = prev
+            changeSlideByOffset(gallery, direction);
+        }
+    };
+
+    // Attach unified events
+    if (window.PointerEvent) {
+        gallery.addEventListener('pointerdown', onPointerDown);
+        gallery.addEventListener('pointerup', onPointerUp);
+        // We don't strictly need pointermove for this simple implementation
+    } else {
+        // Fallback for older touch devices
+        gallery.addEventListener('touchstart', (e) => {
+            if(e.changedTouches.length < 1) return;
+            onPointerDown({
+                clientX: e.changedTouches[0].clientX,
+                clientY: e.changedTouches[0].clientY,
+                pointerType: 'touch',
+                pointerId: 0 // dummy
+            });
+        }, {passive: true});
+
+        gallery.addEventListener('touchend', (e) => {
+            if(e.changedTouches.length < 1) return;
+            onPointerUp({
+                clientX: e.changedTouches[0].clientX,
+                clientY: e.changedTouches[0].clientY,
+                pointerId: 0 // dummy
+            });
+        }, {passive: true});
+    }
+
+    // Setup arrow buttons locally to avoid inline onclick issues
     const prevBtn = gallery.parentElement.querySelector('.gallery-prev');
     const nextBtn = gallery.parentElement.querySelector('.gallery-next');
+
+    // Remove inline handlers if any (via clone) or just override
+    // Simple override:
+    if (prevBtn) {
+        prevBtn.onclick = (e) => { e.stopPropagation(); changeSlideByOffset(gallery, -1); };
+    }
+    if (nextBtn) {
+        nextBtn.onclick = (e) => { e.stopPropagation(); changeSlideByOffset(gallery, 1); };
+    }
+}
+
+// Global functions for inline HTML calls (backwards compatibility)
+window.changeSlide = function(btn, dir) {
+    if (!btn) return;
+    const gallery = btn.closest('.catalog-product-image').querySelector('.product-gallery');
+    changeSlideByOffset(gallery, dir);
+}
+
+window.currentSlide = function(dot, index) {
+    if (!dot) return;
+    const gallery = dot.closest('.catalog-product-image').querySelector('.product-gallery');
+    setActiveSlide(gallery, index);
+}
+
+// Core Logic
+function changeSlideByOffset(gallery, offset) {
+    const slides = gallery.querySelectorAll('.gallery-slide');
+    let currentIndex = 0;
+    slides.forEach((slide, i) => {
+        if (slide.classList.contains('active')) currentIndex = i;
+    });
     
-    if (prevBtn && nextBtn) {
-      prevBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          changeSlide(prevBtn, -1);
+    setActiveSlide(gallery, currentIndex + offset);
+}
+
+function setActiveSlide(gallery, newIndex) {
+    const slides = gallery.querySelectorAll('.gallery-slide');
+    const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
+    const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
+    
+    if (slides.length === 0) return;
+
+    // Wrap around
+    const index = (newIndex % slides.length + slides.length) % slides.length;
+
+    slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+    });
+
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+    });
+}
+
+// ==================== LIGHTBOX LOGIC ====================
+function setupLightboxDOM() {
+    lightbox = document.createElement('div');
+    lightbox.id = 'lightbox';
+    lightbox.innerHTML = `
+        <div id="lightbox-content">
+            <button class="lightbox-close">&times;</button>
+            <button class="lightbox-prev" aria-label="Previous">❮</button>
+            <img id="lightbox-img" src="" alt="View">
+            <button class="lightbox-next" aria-label="Next">❯</button>
+        </div>
+    `;
+    document.body.appendChild(lightbox);
+    
+    lightboxImg = document.getElementById('lightbox-img');
+    closeBtn = lightbox.querySelector('.lightbox-close');
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
+
+    // Close events
+    closeBtn.onclick = closeLightbox;
+    lightbox.onclick = (e) => {
+        if (e.target === lightbox || e.target.id === 'lightbox-content') {
+            closeLightbox();
         }
-      });
-      
-      nextBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          changeSlide(nextBtn, 1);
+    };
+
+    // Navigation events
+    prevBtn.onclick = (e) => { e.stopPropagation(); changeLightboxSlide(-1); };
+    nextBtn.onclick = (e) => { e.stopPropagation(); changeLightboxSlide(1); };
+
+    // Keyboard events
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('active')) return;
+        
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') changeLightboxSlide(-1);
+        if (e.key === 'ArrowRight') changeLightboxSlide(1);
+    });
+
+    // Swipe gestures
+    setupLightboxSwipe();
+}
+
+function setupLightboxSwipe() {
+    let startX = 0;
+    let startY = 0;
+    
+    const onTouchStart = (e) => {
+        if (e.changedTouches.length === 0) return;
+        startX = e.changedTouches[0].clientX;
+        startY = e.changedTouches[0].clientY;
+    };
+
+    const onTouchEnd = (e) => {
+        if (e.changedTouches.length === 0) return;
+        const diffX = startX - e.changedTouches[0].clientX;
+        const diffY = startY - e.changedTouches[0].clientY;
+
+        // Swipe horizontal detection (threshold 50px)
+        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX > 0) changeLightboxSlide(1); // Swipe left -> Next
+            else changeLightboxSlide(-1);          // Swipe right -> Prev
         }
-      });
+    };
+
+    lightbox.addEventListener('touchstart', onTouchStart, {passive: true});
+    lightbox.addEventListener('touchend', onTouchEnd, {passive: true});
+}
+
+function openLightbox(src, gallerySource) {
+    if (!lightbox || !lightboxImg) setupLightboxDOM();
+    
+    // Collect images from the source gallery
+    currentLightboxImages = [];
+    if (gallerySource) {
+        gallerySource.querySelectorAll('.gallery-slide img').forEach(img => {
+            currentLightboxImages.push(img.src);
+        });
+    } else {
+        currentLightboxImages = [src];
     }
 
-    // Добавить свайп
-    addSwipeSupport(gallery);
-  });
+    // Determine starting index
+    // Try to match src exactly, handling potential relative/absolute path differences
+    currentLightboxIndex = currentLightboxImages.findIndex(s => s.endsWith(src) || src.endsWith(s) || s === src);
+    if (currentLightboxIndex === -1) currentLightboxIndex = 0;
+
+    updateLightboxImage();
+    
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
-function getCurrentSlideIndex(gallery) {
-  let currentIndex = 0;
-  gallery.querySelectorAll('.gallery-slide').forEach((slide, index) => {
-    if (slide.classList.contains('active')) {
-      currentIndex = index;
+function changeLightboxSlide(dir) {
+    if (currentLightboxImages.length <= 1) return;
+    
+    currentLightboxIndex += dir;
+    
+    // Wrap around
+    if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxImages.length - 1;
+    if (currentLightboxIndex >= currentLightboxImages.length) currentLightboxIndex = 0;
+    
+    updateLightboxImage();
+}
+
+function updateLightboxImage() {
+    // Fade out for smooth transition
+    lightboxImg.style.opacity = '0.5';
+    
+    setTimeout(() => {
+        lightboxImg.src = currentLightboxImages[currentLightboxIndex];
+        lightboxImg.style.opacity = '1';
+    }, 150);
+
+    // Toggle arrows if single image
+    const prevBtn = lightbox.querySelector('.lightbox-prev');
+    const nextBtn = lightbox.querySelector('.lightbox-next');
+    
+    if (currentLightboxImages.length <= 1) {
+        if(prevBtn) prevBtn.style.display = 'none';
+        if(nextBtn) nextBtn.style.display = 'none';
+    } else {
+        if(prevBtn) prevBtn.style.display = '';
+        if(nextBtn) nextBtn.style.display = '';
+    }
+}
+
+function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+        if(lightboxImg) lightboxImg.src = '';
+    }, 300);
+}
+
+// Compatibility helper (noop if called by old code)
+function initLightbox() {
+    // Already handled in initProductGalleries or consolidated
+}
+
+// ==================== LIGHTBOX ====================
+function initLightbox() {
+  const lightbox = document.createElement('div');
+  lightbox.id = 'lightbox';
+  lightbox.innerHTML = `
+    <div id="lightbox-content">
+      <button class="lightbox-close">&times;</button>
+      <img id="lightbox-img" src="" alt="Fullscreen Image">
+    </div>
+  `;
+  document.body.appendChild(lightbox);
+
+  const lightboxImg = document.getElementById('lightbox-img');
+  const closeBtn = document.querySelector('.lightbox-close');
+
+  // Open lightbox on image click
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.catalog-product-image .gallery-slide img')) {
+      const img = e.target;
+      lightboxImg.src = img.src;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent scrolling
     }
   });
-  return currentIndex;
-}
 
-function setActiveSlide(gallery, dotsContainer, newIndex) {
-  const slides = gallery.querySelectorAll('.gallery-slide');
-  const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot') : [];
-  if (!slides.length) return;
-
-  const normalizedIndex = ((newIndex % slides.length) + slides.length) % slides.length;
-
-  slides.forEach((slide, idx) => {
-    slide.classList.toggle('active', idx === normalizedIndex);
-  });
-
-  dots.forEach((dot, idx) => {
-    dot.classList.toggle('active', idx === normalizedIndex);
-  });
-}
-
-function changeSlide(button, direction) {
-  const gallery = button.closest('.gallery-controls').previousElementSibling;
-  const dotsContainer = button.closest('.catalog-product-image').querySelector('.gallery-dots');
-  const currentIndex = getCurrentSlideIndex(gallery);
-  setActiveSlide(gallery, dotsContainer, currentIndex + direction);
-}
-
-function currentSlide(dot, index) {
-  const dotsContainer = dot.parentElement;
-  const gallery = dotsContainer.previousElementSibling;
-  setActiveSlide(gallery, dotsContainer, index);
-}
-
-function addSwipeSupport(gallery) {
-  const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
-  let startX = 0;
-  let startY = 0;
-   let lastX = 0;
-   let lastY = 0;
-  let isPointerActive = false;
-  const swipeThreshold = 25;
-
-  const handleStart = (x, y) => {
-    startX = x;
-    startY = y;
-    lastX = x;
-    lastY = y;
-    isPointerActive = true;
+  // Close actions
+  const closeLightbox = () => {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      lightboxImg.src = '';
+    }, 300);
   };
 
-  const handleMove = (x, y) => {
-    if (!isPointerActive) return;
-    lastX = x;
-    lastY = y;
-  };
-
-  const handleEnd = (x, y) => {
-    if (!isPointerActive) return;
-    isPointerActive = false;
-
-    const deltaX = (x ?? lastX) - startX;
-    const deltaY = (y ?? lastY) - startY;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-      const currentIndex = getCurrentSlideIndex(gallery);
-      const direction = deltaX > 0 ? -1 : 1;
-      setActiveSlide(gallery, dotsContainer, currentIndex + direction);
+  closeBtn.addEventListener('click', closeLightbox);
+  
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.id === 'lightbox-content') {
+      closeLightbox();
     }
-  };
+  });
 
-  if ('PointerEvent' in window) {
-    gallery.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      handleStart(e.clientX, e.clientY);
-      if (gallery.setPointerCapture) {
-        gallery.setPointerCapture(e.pointerId);
-      }
-    });
-
-    gallery.addEventListener('pointermove', (e) => {
-      handleMove(e.clientX, e.clientY);
-    });
-
-    gallery.addEventListener('pointerup', (e) => {
-      handleEnd(e.clientX, e.clientY);
-      if (gallery.releasePointerCapture) {
-        gallery.releasePointerCapture(e.pointerId);
-      }
-    });
-
-    gallery.addEventListener('pointercancel', () => {
-      handleEnd(lastX, lastY);
-    });
-    gallery.addEventListener('pointerleave', () => {
-      handleEnd(lastX, lastY);
-    });
-  } else {
-    gallery.addEventListener('touchstart', (e) => {
-      if (!e.changedTouches.length) return;
-      const touch = e.changedTouches[0];
-      handleStart(touch.clientX, touch.clientY);
-    }, { passive: true });
-
-    gallery.addEventListener('touchmove', (e) => {
-      if (!e.changedTouches.length) return;
-      const touch = e.changedTouches[0];
-      handleMove(touch.clientX, touch.clientY);
-    }, { passive: true });
-
-    gallery.addEventListener('touchend', (e) => {
-      if (!e.changedTouches.length) return;
-      const touch = e.changedTouches[0];
-      handleEnd(touch.clientX, touch.clientY);
-    }, { passive: true });
-  }
-
-  // Disable native drag on images so swipe works with mouse drag
-  gallery.querySelectorAll('img').forEach(img => {
-    img.setAttribute('draggable', 'false');
-    img.addEventListener('dragstart', (evt) => evt.preventDefault());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+      closeLightbox();
+    }
   });
 }
+
