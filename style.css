@@ -1452,27 +1452,32 @@ footer {
 /* Hero for catalog page */
 .hero-catalog {
   min-height: auto;
-  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
-  color: white;
+  background: #ffffff;
+  color: var(--text-color);
   text-align: center;
-  padding: 5rem 0 3rem 0;
+  padding: 2rem 0 1rem 0; /* Reduced padding */
   margin-top: 80px;
 }
 
+.hero-catalog::before,
+.hero-catalog::after {
+  display: none;
+}
+
 .hero-catalog h1 {
-  color: white;
+  color: var(--text-color);
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
 .hero-catalog p {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
 /* Catalog Section */
 .products-catalog {
-  padding: 4rem 0;
+  padding: 2rem 0 4rem 0; /* Reduced top padding */
   background-color: var(--bg-color);
 }
 
@@ -1971,7 +1976,7 @@ footer {
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: visible;
+  overflow: hidden; /* Mask the slider */
 }
 
 .catalog-product-image::before {
@@ -2006,10 +2011,12 @@ footer {
 /* ==================== PRODUCT GALLERY ==================== */
 .product-gallery {
   display: flex;
+  flex-wrap: nowrap;
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
   border-radius: 20px;
   background: linear-gradient(135deg, #2E8DB5 0%, #5DADE2 100%);
   touch-action: pan-y pinch-zoom;
@@ -2022,16 +2029,16 @@ footer {
 }
 
 .gallery-slide {
-  display: none;
-  width: 100%;
+  min-width: 100%;
   height: 100%;
   flex-shrink: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .gallery-slide.active {
-  display: flex;
+  /* Active state handled by transform logic */
 }
 
 .gallery-slide img {
@@ -2428,36 +2435,41 @@ footer {
   object-fit: contain;
   border-radius: 4px;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.15s ease;
+  user-select: none;
 }
 
 .lightbox-close {
   position: absolute;
-  top: -40px;
-  right: 0;
+  top: 20px;
+  right: 20px;
   color: white;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   cursor: pointer;
-  background: none;
-  border: none;
-  padding: 10px;
-  line-height: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
-  z-index: 2010;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  z-index: 2020;
+  backdrop-filter: blur(4px);
 }
 
 .lightbox-close:hover {
-  color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
 @media (min-width: 769px) {
   .lightbox-close {
-    top: -50px;
-    right: -50px;
-    font-size: 2.5rem;
+    top: 30px;
+    right: 30px;
+    font-size: 2rem;
   }
 }
 
@@ -2466,31 +2478,35 @@ footer {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  font-size: 2.5rem;
-  padding: 1rem;
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 2010;
   border-radius: 50%;
   transition: all 0.3s ease;
   user-select: none;
-  font-family: inherit;
+  backdrop-filter: blur(2px);
 }
 
 .lightbox-prev:hover,
 .lightbox-next:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-50%) scale(1.1);
 }
 
-.lightbox-prev { left: 10px; }
-.lightbox-next { right: 10px; }
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
 
 @media (min-width: 769px) {
-  .lightbox-prev { left: -80px; }
-  .lightbox-next { right: -80px; }
+  .lightbox-prev { left: 40px; }
+  .lightbox-next { right: 40px; }
 }
 
 
@@ -2502,4 +2518,30 @@ footer {
 
 .gallery-slide img:active {
   transform: scale(0.98);
+}
+
+/* ==================== HERO CATALOG LOGO ==================== */
+.hero-logo-simple {
+  width: auto;
+  max-width: 400px; /* Reduced from overly large size */
+  height: auto;
+  display: block;
+  margin: 0 auto; /* Center horizontally */
+  transition: transform 0.3s ease;
+}
+
+.hero-logo-simple:hover {
+  transform: scale(1.02);
+}
+
+@keyframes logoFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .hero-logo-simple {
+    max-width: 280px;
+  }
 }

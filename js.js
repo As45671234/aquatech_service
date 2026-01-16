@@ -171,7 +171,7 @@ function enableLazyLoadingForProductImages() {
 // Consolidated system for managing product galleries, swiping, and lightbox 
 
 // State variables
-let lightbox, lightboxImg, closeBtn;
+let lightbox, lightboxTrack;
 let currentLightboxImages = [];
 let currentLightboxIndex = 0;
 
@@ -412,6 +412,9 @@ function setActiveSlide(gallery, newIndex) {
     // Wrap around
     const index = (newIndex % slides.length + slides.length) % slides.length;
 
+    // Slide the gallery track
+    gallery.style.transform = `translateX(-${index * 100}%)`;
+
     slides.forEach((slide, i) => {
         slide.classList.toggle('active', i === index);
     });
@@ -422,29 +425,41 @@ function setActiveSlide(gallery, newIndex) {
 }
 
 // ==================== LIGHTBOX LOGIC ====================
+// Variables are shared with the top of the file or declared here if missing
+// (Ensuring no redeclaration errors)
+
+
+// ==================== LIGHTBOX LOGIC ====================
+// Variables are shared with the top of the file or declared here if missing
+
 function setupLightboxDOM() {
+    if (document.getElementById('lightbox')) return;
+
     lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
     lightbox.innerHTML = `
         <div id="lightbox-content">
             <button class="lightbox-close">&times;</button>
             <button class="lightbox-prev" aria-label="Previous">❮</button>
-            <img id="lightbox-img" src="" alt="View">
+            <img id="lightbox-img" src="" alt="Fullscreen View">
             <button class="lightbox-next" aria-label="Next">❯</button>
         </div>
     `;
     document.body.appendChild(lightbox);
     
     lightboxImg = document.getElementById('lightbox-img');
-    closeBtn = lightbox.querySelector('.lightbox-close');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
     const prevBtn = lightbox.querySelector('.lightbox-prev');
     const nextBtn = lightbox.querySelector('.lightbox-next');
 
     // Close events
-    closeBtn.onclick = closeLightbox;
+    const closeAction = () => closeLightbox();
+    closeBtn.onclick = closeAction;
+    
+    // Close on click outside (but not on nav buttons or image)
     lightbox.onclick = (e) => {
         if (e.target === lightbox || e.target.id === 'lightbox-content') {
-            closeLightbox();
+            closeAction();
         }
     };
 
@@ -456,32 +471,28 @@ function setupLightboxDOM() {
     document.addEventListener('keydown', (e) => {
         if (!lightbox.classList.contains('active')) return;
         
-        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'Escape') closeAction();
         if (e.key === 'ArrowLeft') changeLightboxSlide(-1);
         if (e.key === 'ArrowRight') changeLightboxSlide(1);
     });
 
-    // Swipe gestures
+    // Simple Swipe Detection (No Dragging)
     setupLightboxSwipe();
 }
 
 function setupLightboxSwipe() {
     let startX = 0;
-    let startY = 0;
     
     const onTouchStart = (e) => {
         if (e.changedTouches.length === 0) return;
         startX = e.changedTouches[0].clientX;
-        startY = e.changedTouches[0].clientY;
     };
 
     const onTouchEnd = (e) => {
         if (e.changedTouches.length === 0) return;
         const diffX = startX - e.changedTouches[0].clientX;
-        const diffY = startY - e.changedTouches[0].clientY;
 
-        // Swipe horizontal detection (threshold 50px)
-        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (Math.abs(diffX) > 50) {
             if (diffX > 0) changeLightboxSlide(1); // Swipe left -> Next
             else changeLightboxSlide(-1);          // Swipe right -> Prev
         }
@@ -492,9 +503,9 @@ function setupLightboxSwipe() {
 }
 
 function openLightbox(src, gallerySource) {
-    if (!lightbox || !lightboxImg) setupLightboxDOM();
+    if (!document.getElementById('lightbox')) setupLightboxDOM();
     
-    // Collect images from the source gallery
+    // Collect images
     currentLightboxImages = [];
     if (gallerySource) {
         gallerySource.querySelectorAll('.gallery-slide img').forEach(img => {
@@ -505,12 +516,12 @@ function openLightbox(src, gallerySource) {
     }
 
     // Determine starting index
-    // Try to match src exactly, handling potential relative/absolute path differences
     currentLightboxIndex = currentLightboxImages.findIndex(s => s.endsWith(src) || src.endsWith(s) || s === src);
     if (currentLightboxIndex === -1) currentLightboxIndex = 0;
 
     updateLightboxImage();
     
+    // Activate
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -520,7 +531,7 @@ function changeLightboxSlide(dir) {
     
     currentLightboxIndex += dir;
     
-    // Wrap around
+    // Wrap around for better experience in simple mode
     if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxImages.length - 1;
     if (currentLightboxIndex >= currentLightboxImages.length) currentLightboxIndex = 0;
     
@@ -528,7 +539,9 @@ function changeLightboxSlide(dir) {
 }
 
 function updateLightboxImage() {
-    // Fade out for smooth transition
+    if (!lightboxImg) return;
+    
+    // Simple fade effect
     lightboxImg.style.opacity = '0.5';
     
     setTimeout(() => {
@@ -536,7 +549,10 @@ function updateLightboxImage() {
         lightboxImg.style.opacity = '1';
     }, 150);
 
-    // Toggle arrows if single image
+    updateLightboxButtons();
+}
+
+function updateLightboxButtons() {
     const prevBtn = lightbox.querySelector('.lightbox-prev');
     const nextBtn = lightbox.querySelector('.lightbox-next');
     
@@ -553,62 +569,13 @@ function closeLightbox() {
     if (!lightbox) return;
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    // Clear content after animation
     setTimeout(() => {
         if(lightboxImg) lightboxImg.src = '';
     }, 300);
 }
 
-// Compatibility helper (noop if called by old code)
+// Compatibility helper
 function initLightbox() {
-    // Already handled in initProductGalleries or consolidated
+    // No-op, managed by openLightbox logic
 }
-
-// ==================== LIGHTBOX ====================
-function initLightbox() {
-  const lightbox = document.createElement('div');
-  lightbox.id = 'lightbox';
-  lightbox.innerHTML = `
-    <div id="lightbox-content">
-      <button class="lightbox-close">&times;</button>
-      <img id="lightbox-img" src="" alt="Fullscreen Image">
-    </div>
-  `;
-  document.body.appendChild(lightbox);
-
-  const lightboxImg = document.getElementById('lightbox-img');
-  const closeBtn = document.querySelector('.lightbox-close');
-
-  // Open lightbox on image click
-  document.addEventListener('click', (e) => {
-    if (e.target.closest('.catalog-product-image .gallery-slide img')) {
-      const img = e.target;
-      lightboxImg.src = img.src;
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden'; // Prevent scrolling
-    }
-  });
-
-  // Close actions
-  const closeLightbox = () => {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-    setTimeout(() => {
-      lightboxImg.src = '';
-    }, 300);
-  };
-
-  closeBtn.addEventListener('click', closeLightbox);
-  
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox || e.target.id === 'lightbox-content') {
-      closeLightbox();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-      closeLightbox();
-    }
-  });
-}
-
