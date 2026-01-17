@@ -1339,30 +1339,35 @@ body.light .modal-content {
   margin: 3rem auto 0;
   text-align: center;
   box-shadow: none;
-  opacity: 1; /* Fully visible but colored appropriately */
+  opacity: 1; 
   border-top: none;
 }
 
 .requisites-card p {
-  font-size: 0.95rem !important; /* Match footer size */
+  font-size: 0.9rem !important; /* Slightly larger for readability on color */
   line-height: 1.6;
   margin: 0;
-  color: var(--text-secondary); /* Match footer color */
-  font-weight: 500; /* Match footer weight */
+  color: rgba(255, 255, 255, 0.9); /* White text */
+  font-weight: 500;
 }
 
 .requisites-card strong {
   font-weight: 700;
-  color: var(--text-color); /* Slightly darker for brand name */
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 .requisites-card a {
-  color: var(--text-secondary);
+  color: #ffffff;
   text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .requisites-card a:hover {
-  color: var(--accent-color);
+  border-bottom-color: #ffffff;
 }
 
 .company-name {
