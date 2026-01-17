@@ -907,6 +907,19 @@ body.light .why-us {
   margin-bottom: 1rem;
 }
 
+@media (max-width: 768px) {
+  .map-card {
+     /* Allow map to fit screen */
+     overflow: hidden; 
+     padding: 0.5rem !important; 
+  }
+  .map-container {
+     /* Remove fixed min-width to allow scaling down */
+     width: 100%; 
+     min-width: 0;
+  }
+}
+
 .kz-svg {
   width: 100%;
   height: 100%;
@@ -929,60 +942,39 @@ body.light .why-us {
 
 .map-point {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  background: var(--accent-color);
-  border: 2px solid #ffffff;
-  border-radius: 50%;
   transform: translate(-50%, -50%);
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
   z-index: 10;
+  /* Text styling for names directly on map */
+  color: #0f3a66;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  pointer-events: none; /* purely visual */
 }
 
-.map-point:hover {
-  transform: translate(-50%, -50%) scale(1.5);
-  background: var(--green-accent);
-  z-index: 20;
-}
-
-.map-point::after {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 100%; height: 100%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: inherit;
-  opacity: 0.6;
-  animation: pulse 2s infinite;
-  z-index: -1;
-}
-
-@keyframes pulse {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+@media (max-width: 768px) {
+  .map-point {
+     /* Scale text, but ensure readability limits */
+     font-size: clamp(8px, 2.8vw, 12px); 
+     text-shadow: 0 0 3px #fff;
+  }
 }
 
 .tooltip {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 58, 102, 0.9);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.map-point:hover .tooltip {
+  /* Reset tooltip to be plain text container */
+  display: block;
+  position: static;
+  transform: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
   opacity: 1;
+  pointer-events: none;
+  transition: none;
+  width: auto;
 }
 
 /* Features Card Styles */
@@ -1062,6 +1054,33 @@ body.light .why-us-card {
 .why-us-card.premium h3,
 .why-us-card.premium p {
   color: #ffffff;
+}
+
+.why-us-card.features-card {
+  background: linear-gradient(135deg, #51F083 0%, #25D366 100%); /* Brighter, fresher green */
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4); /* Softer, colored shadow */
+}
+
+.why-us-card.features-card h3 {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.why-us-card.features-card .features-list li {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.why-us-card.features-card .summary-text {
+  color: #ffffff !important;
+  border-top-color: rgba(255, 255, 255, 0.3);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.why-us-card.features-card .feature-icon {
+  filter: brightness(0) invert(1);
 }
 
 .why-us-icon {
@@ -1309,17 +1328,41 @@ body.light .modal-content {
   gap: 3rem;
 }
 
-/* Requisites Card Styles */
+/* Requisites Card Styles - Minimal Footer Style */
 .requisites-card {
   background: transparent;
   backdrop-filter: none;
   border: none;
-  border-radius: 0;
   padding: 0;
   width: 100%;
-  max-width: 600px;
-  text-align: left;
+  max-width: 800px;
+  margin: 3rem auto 0;
+  text-align: center;
   box-shadow: none;
+  opacity: 1; /* Fully visible but colored appropriately */
+  border-top: none;
+}
+
+.requisites-card p {
+  font-size: 0.95rem !important; /* Match footer size */
+  line-height: 1.6;
+  margin: 0;
+  color: var(--text-secondary); /* Match footer color */
+  font-weight: 500; /* Match footer weight */
+}
+
+.requisites-card strong {
+  font-weight: 700;
+  color: var(--text-color); /* Slightly darker for brand name */
+}
+
+.requisites-card a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.requisites-card a:hover {
+  color: var(--accent-color);
 }
 
 .company-name {
@@ -2254,8 +2297,10 @@ footer {
   will-change: transform;
   border-radius: 20px;
   background: linear-gradient(135deg, #2E8DB5 0%, #5DADE2 100%);
-  touch-action: pan-y pinch-zoom;
+  touch-action: pan-y;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   z-index: 1;
 }
 
@@ -2264,12 +2309,13 @@ footer {
 }
 
 .gallery-slide {
-  min-width: 100%;
+  min-width: 85%;
   height: 100%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 4px;
 }
 
 .gallery-slide.active {
@@ -2282,6 +2328,8 @@ footer {
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
   cursor: zoom-in; /* Show user it is clickable */
+  pointer-events: none; /* iOS fix: prevent image drag/select */
+  -webkit-user-drag: none;
 }
 
 .gallery-controls {
@@ -2314,16 +2362,18 @@ footer {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.gallery-prev:hover,
-.gallery-next:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
 .gallery-prev:active,
 .gallery-next:active {
   transform: scale(0.95);
+}
+
+@media (hover: hover) {
+  .gallery-prev:hover,
+  .gallery-next:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
 }
 
 .gallery-dots {
@@ -2521,7 +2571,10 @@ footer {
   }
   
   .catalog-product-card { border-radius: 12px; }
-  .catalog-product-image { height: 180px; }
+  .catalog-product-image { height: 260px; }
+  
+  .gallery-slide { min-width: 100%; } /* Force full width on mobile to avoid alignment issues */
+  
   .catalog-product-icon { font-size: 2.5rem; }
   .catalog-product-info { padding: 1rem; }
   .catalog-product-info h3 { font-size: 1.1rem; }

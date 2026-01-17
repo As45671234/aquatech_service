@@ -264,14 +264,8 @@ function setupGalleryDOM(gallery) {
     }
 
     // Initialize state
-    const allSlides = gallery.querySelectorAll('.gallery-slide');
-    const allDots = dotsContainer.querySelectorAll('.dot');
-
-    allSlides.forEach(s => s.classList.remove('active'));
-    allDots.forEach(d => d.classList.remove('active'));
-
-    if (allSlides.length > 0) allSlides[0].classList.add('active');
-    if (allDots.length > 0) allDots[0].classList.add('active');
+    // Set initial slide and position (centered)
+    setActiveSlide(gallery, 0);
 }
 
 function setupGalleryInteraction(gallery) {
@@ -419,8 +413,24 @@ function setActiveSlide(gallery, newIndex) {
     // Wrap around
     const index = (newIndex % slides.length + slides.length) % slides.length;
 
-    // Slide the gallery track
-    gallery.style.transform = `translateX(-${index * 100}%)`;
+    // Dynamically calculate centering based on actual slide width in %
+    // This allows CSS to change (85% or 100%) without breaking JS
+    const slide = slides[0];
+    const galleryWidth = gallery.offsetWidth;
+    // Fallback to 85 if not renderable yet, assuming default CSS
+    let slideWidthPercent = 85; 
+    
+    if (galleryWidth > 0 && slide) {
+         slideWidthPercent = (slide.offsetWidth / galleryWidth) * 100;
+         // Clean up potentially tiny fractional errors
+         if (Math.abs(slideWidthPercent - 85) < 1) slideWidthPercent = 85;
+         if (Math.abs(slideWidthPercent - 100) < 1) slideWidthPercent = 100;
+    }
+
+    const offset = 50 - (slideWidthPercent / 2); // Center active slide
+    const translateVal = -index * slideWidthPercent + offset;
+
+    gallery.style.transform = `translateX(${translateVal}%)`;
 
     slides.forEach((slide, i) => {
         slide.classList.toggle('active', i === index);
