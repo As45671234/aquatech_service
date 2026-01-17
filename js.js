@@ -280,12 +280,30 @@ function setupGalleryInteraction(gallery) {
     // Pointer/Touch Logic for Swipe & Tap
     let startX = 0;
     let startY = 0;
-    let startTime = 0;
     let isPointerDown = false;
+    let isSwiping = false;
     
     // Prevent native drag
     gallery.querySelectorAll('img').forEach(img => {
         img.ondragstart = () => false;
+    });
+
+    // Improved Click Handler: Use native click for reliability for opening Lightbox
+    // This allows the browser to handle "what is a tap" vs "what is a scroll/drag"
+    gallery.addEventListener('click', (e) => {
+        // If we just performed a swipe action, ignore this click
+        if (isSwiping) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+
+        // Open Lightbox
+        // Find specific image that was clicked or fallback to active
+        const activeSlide = gallery.querySelector('.gallery-slide.active img');
+        if (activeSlide) {
+            openLightbox(activeSlide.src, gallery);
+        }
     });
 
     const onPointerDown = (e) => {
@@ -293,9 +311,9 @@ function setupGalleryInteraction(gallery) {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         
         isPointerDown = true;
+        isSwiping = false; // Reset state
         startX = e.clientX;
         startY = e.clientY;
-        startTime = Date.now();
         
         // Ensure we capture pointer for swiping
         if (gallery.setPointerCapture) {
@@ -316,22 +334,11 @@ function setupGalleryInteraction(gallery) {
         const endY = e.clientY;
         const diffX = startX - endX;
         const diffY = startY - endY;
-        const duration = Date.now() - startTime;
         
-        // Detect click/tap (minimal movement, short duration)
-        // Increased tolerance for "tap" detection to fix user reports of unclickable images
-        if (Math.abs(diffX) < 15 && Math.abs(diffY) < 15 && duration < 500) {
-            // It's a tap - Open Lightbox
-            // Find currently active image src
-            const activeSlide = gallery.querySelector('.gallery-slide.active img');
-            if (activeSlide) {
-                openLightbox(activeSlide.src, gallery); // Pass gallery info for navigation
-            }
-            return;
-        }
-
         // Detect Horizontal Swipe
-        if (Math.abs(diffX) > 30 && Math.abs(diffX) > Math.abs(diffY)) {
+        // Sensitivity: > 20px difference (increased sensitivity from 30px)
+        if (Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY)) {
+            isSwiping = true; // Mark as swipe to prevent click
             const direction = diffX > 0 ? 1 : -1; // 1 = next, -1 = prev
             changeSlideByOffset(gallery, direction);
         }
@@ -430,7 +437,6 @@ function setActiveSlide(gallery, newIndex) {
 
 
 // ==================== LIGHTBOX LOGIC ====================
-// Variables are shared with the top of the file or declared here if missing
 
 function setupLightboxDOM() {
     if (document.getElementById('lightbox')) return;
@@ -438,12 +444,16 @@ function setupLightboxDOM() {
     lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
     lightbox.innerHTML = `
+        <div class="lightbox-top-bar">
+            <div class="lightbox-counter" id="lightbox-counter">1 / 1</div>
+            <button class="lightbox-close" aria-label="Close">&times;</button>
+        </div>
         <div id="lightbox-content">
-            <button class="lightbox-close">&times;</button>
             <button class="lightbox-prev" aria-label="Previous">❮</button>
-            <img id="lightbox-img" src="" alt="Fullscreen View">
+            <img id="lightbox-img" src="" alt="View" draggable="false">
             <button class="lightbox-next" aria-label="Next">❯</button>
         </div>
+        <div id="lightbox-thumbnails"></div>
     `;
     document.body.appendChild(lightbox);
     
@@ -456,7 +466,7 @@ function setupLightboxDOM() {
     const closeAction = () => closeLightbox();
     closeBtn.onclick = closeAction;
     
-    // Close on click outside (but not on nav buttons or image)
+    // Close on click outside (but not on content)
     lightbox.onclick = (e) => {
         if (e.target === lightbox || e.target.id === 'lightbox-content') {
             closeAction();
@@ -474,32 +484,162 @@ function setupLightboxDOM() {
         if (e.key === 'Escape') closeAction();
         if (e.key === 'ArrowLeft') changeLightboxSlide(-1);
         if (e.key === 'ArrowRight') changeLightboxSlide(1);
+        // Reset zoom on navigation
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') resetZoom();
     });
 
-    // Simple Swipe Detection (No Dragging)
     setupLightboxSwipe();
+    setupZoom();
+}
+
+// ==================== ZOOM & SWIPE LOGIC (UNIFIED) ====================
+let currentScale = 1;
+let translateX = 0, translateY = 0;
+let isDragging = false;
+let startX = 0, startY = 0;
+let initialPinchDistance = 0;
+let initialScale = 1;
+
+function setupZoom() {
+    const img = document.getElementById('lightbox-img');
+    
+    // --- MOUSE INTERACTIONS (Desktop) ---
+    
+    // Wheel Zoom
+    img.addEventListener('wheel', (e) => {
+        if(!lightbox.classList.contains('active')) return;
+        e.preventDefault();
+        
+        const delta = e.deltaY * -0.005;
+        const newScale = Math.min(Math.max(1, currentScale + delta), 4);
+        
+        if(newScale === 1) {
+            translateX = 0;
+            translateY = 0;
+        }
+        
+        currentScale = newScale;
+        updateTransform();
+    }, {passive: false});
+
+    // Mouse Drag (Pan)
+    img.addEventListener('mousedown', (e) => {
+        if (currentScale <= 1) return;
+        e.preventDefault();
+        isDragging = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+        img.style.cursor = 'grabbing';
+    });
+    
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        updateTransform();
+    });
+    
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        if(img) img.style.cursor = currentScale > 1 ? 'grab' : 'default';
+    });
+    
+    // Double Click Zoom
+    img.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        if (currentScale > 1) {
+            resetZoom();
+        } else {
+            currentScale = 2.5; 
+            updateTransform();
+        }
+    });
+
+    // --- TOUCH INTERACTIONS (Mobile) ---
+    
+    let touchStartX = 0;
+    let touchStartY = 0; 
+    let isPanning = false;
+
+    lightbox.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            // Single touch: Swipe or Pan
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            
+            if (currentScale > 1) {
+                isPanning = true;
+                startX = e.touches[0].clientX - translateX;
+                startY = e.touches[0].clientY - translateY;
+            }
+        } else if (e.touches.length === 2) {
+            // Two finger pinch
+            isPanning = false;
+            initialPinchDistance = getDistance(e.touches);
+            initialScale = currentScale;
+        }
+    }, {passive: false});
+
+    lightbox.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) {
+            if (currentScale > 1 && isPanning) {
+                // Pan
+                e.preventDefault(); // Prevent scrolling background
+                translateX = e.touches[0].clientX - startX;
+                translateY = e.touches[0].clientY - startY;
+                updateTransform();
+            }
+        } else if (e.touches.length === 2) {
+            // Pinch
+            e.preventDefault();
+            const currentDistance = getDistance(e.touches);
+            if (initialPinchDistance > 0) {
+                const pinchScale = currentDistance / initialPinchDistance;
+                currentScale = Math.min(Math.max(1, initialScale * pinchScale), 4);
+                updateTransform();
+            }
+        }
+    }, {passive: false});
+
+    lightbox.addEventListener('touchend', (e) => {
+        isPanning = false;
+        
+        // Swipe Dectection (only if not zoomed)
+        if (currentScale === 1 && e.changedTouches.length === 1) {
+            const diffX = touchStartX - e.changedTouches[0].clientX;
+            const diffY = touchStartY - e.changedTouches[0].clientY;
+            
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+               if (diffX > 0) changeLightboxSlide(1); 
+               else changeLightboxSlide(-1);
+            }
+        }
+    });
+}
+
+function getDistance(touches) {
+    return Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+    );
 }
 
 function setupLightboxSwipe() {
-    let startX = 0;
-    
-    const onTouchStart = (e) => {
-        if (e.changedTouches.length === 0) return;
-        startX = e.changedTouches[0].clientX;
-    };
+    // Deprecated: merged into setupZoom
+}
 
-    const onTouchEnd = (e) => {
-        if (e.changedTouches.length === 0) return;
-        const diffX = startX - e.changedTouches[0].clientX;
+function updateTransform() {
+    const img = document.getElementById('lightbox-img');
+    if(!img) return;
+    img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+}
 
-        if (Math.abs(diffX) > 50) {
-            if (diffX > 0) changeLightboxSlide(1); // Swipe left -> Next
-            else changeLightboxSlide(-1);          // Swipe right -> Prev
-        }
-    };
-
-    lightbox.addEventListener('touchstart', onTouchStart, {passive: true});
-    lightbox.addEventListener('touchend', onTouchEnd, {passive: true});
+function resetZoom() {
+    currentScale = 1;
+    translateX = 0;
+    translateY = 0;
+    updateTransform();
 }
 
 function openLightbox(src, gallerySource) {
@@ -519,11 +659,44 @@ function openLightbox(src, gallerySource) {
     currentLightboxIndex = currentLightboxImages.findIndex(s => s.endsWith(src) || src.endsWith(s) || s === src);
     if (currentLightboxIndex === -1) currentLightboxIndex = 0;
 
+    resetZoom();
     updateLightboxImage();
+    renderThumbnails();
     
     // Activate
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+}
+
+function renderThumbnails() {
+    const thumbContainer = document.getElementById('lightbox-thumbnails');
+    if (!thumbContainer) return;
+
+    thumbContainer.innerHTML = '';
+    
+    if (currentLightboxImages.length <= 1) {
+        thumbContainer.style.display = 'none';
+        return;
+    }
+    thumbContainer.style.display = 'flex';
+
+    currentLightboxImages.forEach((src, idx) => {
+        const thumb = document.createElement('div');
+        thumb.className = `lightbox-thumb ${idx === currentLightboxIndex ? 'active' : ''}`;
+        thumb.onclick = (e) => {
+            e.stopPropagation();
+            currentLightboxIndex = idx;
+            resetZoom();
+            updateLightboxImage();
+        };
+        
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = `Thumb ${idx + 1}`;
+        
+        thumb.appendChild(img);
+        thumbContainer.appendChild(thumb);
+    });
 }
 
 function changeLightboxSlide(dir) {
@@ -535,6 +708,7 @@ function changeLightboxSlide(dir) {
     if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxImages.length - 1;
     if (currentLightboxIndex >= currentLightboxImages.length) currentLightboxIndex = 0;
     
+    resetZoom();
     updateLightboxImage();
 }
 
@@ -548,6 +722,22 @@ function updateLightboxImage() {
         lightboxImg.src = currentLightboxImages[currentLightboxIndex];
         lightboxImg.style.opacity = '1';
     }, 150);
+
+    // Update Counter
+    const counter = document.getElementById('lightbox-counter');
+    if (counter) {
+        counter.textContent = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
+    }
+
+    // Update Active Thumbnail
+    const thumbs = document.querySelectorAll('.lightbox-thumb');
+    thumbs.forEach((t, i) => {
+        if (i === currentLightboxIndex) {
+            t.classList.add('active');
+            t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+        else t.classList.remove('active');
+    });
 
     updateLightboxButtons();
 }
@@ -569,11 +759,13 @@ function closeLightbox() {
     if (!lightbox) return;
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    resetZoom();
     // Clear content after animation
     setTimeout(() => {
         if(lightboxImg) lightboxImg.src = '';
     }, 300);
 }
+
 
 // Compatibility helper
 function initLightbox() {
