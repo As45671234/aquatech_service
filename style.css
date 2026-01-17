@@ -50,6 +50,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
 }
 
 .container {
@@ -171,6 +173,7 @@ ul {
   margin: 0 auto;
   width: fit-content;
   background: rgba(255, 255, 255, 0.98);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   padding: 1rem 2rem;
   border-radius: 50px;
@@ -179,6 +182,8 @@ ul {
   display: flex;
   gap: 2.5rem;
   box-shadow: var(--shadow-md);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 body.light .nav {
@@ -229,6 +234,7 @@ body.light .nav {
   background: var(--card-bg);
   border: 2px solid var(--card-border);
   border-radius: 12px;
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -237,6 +243,8 @@ body.light .nav {
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
   transition: all 0.3s ease;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .burger span {
@@ -289,6 +297,7 @@ body.light .nav {
   left: 0;
   width: 100%;
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for iOS */
   background: var(--bg-color);
   z-index: 1000;
   flex-direction: column;
@@ -299,6 +308,8 @@ body.light .nav {
   pointer-events: none;
   transition: opacity 0.3s ease, pointer-events 0.3s ease;
   padding: 0 1rem;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
 }
 
 .mobile-nav.active {
@@ -504,6 +515,10 @@ body.light .hero {
   cursor: pointer;
   min-height: 48px;
   -webkit-tap-highlight-color: transparent;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .btn-primary {
@@ -597,6 +612,7 @@ body.light .hero {
   max-width: 420px;
   padding: 18px 14px;
   background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-radius: 24px;
   border: 2px solid var(--card-border);
@@ -615,6 +631,7 @@ body.light .hero {
   scrollbar-color: transparent transparent;
   animation: slideInRight 0.8s ease;
   justify-content: flex-start;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 .employees-carousel::-webkit-scrollbar { display: none; }
 
@@ -687,6 +704,11 @@ body.light .hero {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-transform: translateY(-50%) translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 .carousel-arrow.prev { left: 6px; }
 .carousel-arrow.next { right: 6px; }
@@ -1209,6 +1231,7 @@ body.light .product-card {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   animation: fadeIn 0.3s ease;
 }
@@ -1499,6 +1522,9 @@ body.light .modal-content {
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .social-btn:hover,
@@ -2706,6 +2732,7 @@ footer {
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -2761,6 +2788,7 @@ footer {
   background: rgba(0, 0, 0, 0.5);
   padding: 5px 12px;
   border-radius: 20px;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   pointer-events: auto;
 }
@@ -2808,6 +2836,7 @@ footer {
   border-radius: 50%;
   transition: all 0.3s ease;
   user-select: none;
+  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
 }
 
@@ -2832,6 +2861,7 @@ footer {
   overflow-x: auto;
   z-index: 2020;
   background: rgba(0,0,0,0.3);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
