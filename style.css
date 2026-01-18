@@ -1087,10 +1087,10 @@ body.light .why-us-card {
 }
 
 .why-us-card.features-card {
-  background: linear-gradient(135deg, #51F083 0%, #25D366 100%); /* Brighter, fresher green */
+  background: linear-gradient(135deg, #0BB4FF 0%, #0090D1 100%);
   border: none;
   color: #ffffff;
-  box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4); /* Softer, colored shadow */
+  box-shadow: 0 15px 35px rgba(11, 180, 255, 0.4);
 }
 
 .why-us-card.features-card h3 {
