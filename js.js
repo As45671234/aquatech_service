@@ -336,10 +336,6 @@ function setupGalleryInteraction(gallery) {
             const direction = diffX > 0 ? 1 : -1; // 1 = next, -1 = prev
             changeSlideByOffset(gallery, direction);
             
-            // Try to prevent click on native events
-            if (e.preventDefault) e.preventDefault();
-            if (e.stopPropagation) e.stopPropagation();
-            
             // Clear isSwiping flag after animation completes
             swipeTimeout = setTimeout(() => {
                 isSwiping = false;
@@ -372,8 +368,8 @@ function setupGalleryInteraction(gallery) {
                 clientY: e.changedTouches[0].clientY,
                 pointerType: 'touch',
                 pointerId: 0,
-                preventDefault: () => e.preventDefault(),
-                stopPropagation: () => e.stopPropagation()
+                preventDefault: () => {},
+                stopPropagation: () => {}
             });
         }, {passive: true});
 
