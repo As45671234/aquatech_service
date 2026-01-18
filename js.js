@@ -388,8 +388,6 @@ function setupGalleryInteraction(gallery) {
             });
         }, {passive: true});
     }
-        }, {passive: true});
-    }
 
     // Setup arrow buttons locally to avoid inline onclick issues
     const prevBtn = gallery.parentElement.querySelector('.gallery-prev');
