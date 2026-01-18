@@ -270,7 +270,11 @@ function setupGalleryDOM(gallery) {
 
 function setupGalleryInteraction(gallery) {
     const dotsContainer = gallery.parentElement.querySelector('.gallery-dots');
-    
+    // We attach listeners to the parent container to ensure we capture events 
+    // even if the gallery track is transformed (moved) out of the initial hit area.
+    const container = gallery.parentElement; 
+    container.style.touchAction = 'pan-y'; // Ensure browser knows we handle horizontal
+
     // Pointer/Touch Logic for Swipe & Tap
     let startX = 0;
     let startY = 0;
@@ -304,6 +308,9 @@ function setupGalleryInteraction(gallery) {
     });
 
     const onPointerDown = (e) => {
+        // Ignore if touching controls (arrows)
+        if (e.target.closest('.gallery-controls')) return;
+
         // Only left click or touch
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         
@@ -365,12 +372,12 @@ function setupGalleryInteraction(gallery) {
         }
     };
 
-    // Attach unified events
+    // Attach unified events to the STATIC CONTAINER, not the moving track
     if (window.PointerEvent) {
-        gallery.addEventListener('pointerdown', onPointerDown);
-        gallery.addEventListener('pointermove', onPointerMove, {passive: false});
-        gallery.addEventListener('pointerup', onPointerUp);
-        gallery.addEventListener('pointercancel', () => {
+        container.addEventListener('pointerdown', onPointerDown);
+        container.addEventListener('pointermove', onPointerMove, {passive: false});
+        container.addEventListener('pointerup', onPointerUp);
+        container.addEventListener('pointercancel', () => {
             isPointerDown = false;
             isSwiping = false;
             if (swipeTimeout) {
@@ -380,7 +387,8 @@ function setupGalleryInteraction(gallery) {
         });
     } else {
         // Fallback for older touch devices
-        gallery.addEventListener('touchstart', (e) => {
+        container.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.gallery-controls')) return;
             if(e.changedTouches.length < 1) return;
             onPointerDown({
                 clientX: e.changedTouches[0].clientX,
@@ -392,7 +400,7 @@ function setupGalleryInteraction(gallery) {
             });
         }, {passive: true});
         
-        gallery.addEventListener('touchmove', (e) => {
+        container.addEventListener('touchmove', (e) => {
             if(e.changedTouches.length < 1) return;
             onPointerMove({
                 clientX: e.changedTouches[0].clientX,
@@ -403,7 +411,7 @@ function setupGalleryInteraction(gallery) {
             });
         }, {passive: false});
 
-        gallery.addEventListener('touchend', (e) => {
+        container.addEventListener('touchend', (e) => {
             if(e.changedTouches.length < 1) return;
             onPointerUp({
                 clientX: e.changedTouches[0].clientX,
