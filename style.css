@@ -729,6 +729,8 @@ body.light .employees-section {
 .employees-mobile-wrap {
   position: relative;
   overflow: hidden;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 .employees-scroll-mobile {
@@ -736,8 +738,8 @@ body.light .employees-section {
   gap: 1rem;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0 0.5rem 1rem;
-  scroll-padding: 0.5rem;
+  padding: 0 0 1rem 0;
+  scroll-padding: 0;
   scrollbar-width: none;
   scrollbar-color: transparent transparent;
   scroll-snap-type: x mandatory;
@@ -760,9 +762,9 @@ body.light .employees-section {
 }
 
 .employees-scroll-mobile .employee-card {
-  flex: 0 0 calc(100vw - 2rem - 1rem);
+  flex: 0 0 calc(100vw - 4rem);
   max-width: 280px;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   box-shadow: var(--shadow-lg);
@@ -772,6 +774,7 @@ body.light .employees-section {
   border-radius: 16px;
   overflow: hidden;
   position: relative;
+  margin: 0 auto;
 }
 
 .employees-mobile-wrap .carousel-nav {
@@ -1595,8 +1598,9 @@ footer {
   }
 
   .employees-scroll-mobile .employee-card {
-    flex: 0 0 calc(100vw - 2rem - 1rem);
+    flex: 0 0 calc(100vw - 4rem);
     max-width: 280px;
+    margin: 0 auto;
   }
 
   .employee-card img {
@@ -1715,8 +1719,9 @@ footer {
   /* Employees mobile */
   .employees-section { padding: 2rem 0; }
   .employees-scroll-mobile .employee-card {
-    flex: 0 0 calc(100vw - 1.5rem - 0.8rem);
+    flex: 0 0 calc(100vw - 3rem);
     max-width: 240px;
+    margin: 0 auto;
   }
   .employee-card img {
     width: 100%;
