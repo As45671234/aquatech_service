@@ -274,6 +274,8 @@ function setupGalleryInteraction(gallery) {
     // Pointer/Touch Logic for Swipe & Tap
     let startX = 0;
     let startY = 0;
+    let endX = 0;
+    let endY = 0;
     let isPointerDown = false;
     let isSwiping = false;
     let swipeTimeout = null;
@@ -316,15 +318,24 @@ function setupGalleryInteraction(gallery) {
         isPointerDown = true;
         startX = e.clientX;
         startY = e.clientY;
+        endX = e.clientX;
+        endY = e.clientY;
+    };
+    
+    const onPointerMove = (e) => {
+        if (!isPointerDown) return;
+        endX = e.clientX;
+        endY = e.clientY;
     };
 
     const onPointerUp = (e) => {
         if (!isPointerDown) return;
         
-        const endX = e.clientX;
-        const endY = e.clientY;
-        const diffX = startX - endX;
-        const diffY = startY - endY;
+        // Use last known position from move, or current position
+        const finalX = endX;
+        const finalY = endY;
+        const diffX = startX - finalX;
+        const diffY = startY - finalY;
         
         // Reset pointer down immediately
         isPointerDown = false;
@@ -337,10 +348,11 @@ function setupGalleryInteraction(gallery) {
             changeSlideByOffset(gallery, direction);
             
             // Clear isSwiping flag after animation completes
+            // Increased timeout to 350ms for smoother iOS experience
             swipeTimeout = setTimeout(() => {
                 isSwiping = false;
                 swipeTimeout = null;
-            }, 200);
+            }, 350);
         } else {
             // Not a swipe, clear immediately
             isSwiping = false;
@@ -350,6 +362,7 @@ function setupGalleryInteraction(gallery) {
     // Attach unified events
     if (window.PointerEvent) {
         gallery.addEventListener('pointerdown', onPointerDown);
+        gallery.addEventListener('pointermove', onPointerMove, {passive: true});
         gallery.addEventListener('pointerup', onPointerUp);
         gallery.addEventListener('pointercancel', () => {
             isPointerDown = false;
@@ -370,6 +383,15 @@ function setupGalleryInteraction(gallery) {
                 pointerId: 0,
                 preventDefault: () => {},
                 stopPropagation: () => {}
+            });
+        }, {passive: true});
+        
+        gallery.addEventListener('touchmove', (e) => {
+            if(e.changedTouches.length < 1) return;
+            onPointerMove({
+                clientX: e.changedTouches[0].clientX,
+                clientY: e.changedTouches[0].clientY,
+                pointerId: 0
             });
         }, {passive: true});
 
