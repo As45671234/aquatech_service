@@ -276,6 +276,7 @@ function setupGalleryInteraction(gallery) {
     let startY = 0;
     let isPointerDown = false;
     let isSwiping = false;
+    let gestureStart = null; // Track gesture state
     
     // Prevent native drag
     gallery.querySelectorAll('img').forEach(img => {
@@ -306,6 +307,7 @@ function setupGalleryInteraction(gallery) {
         
         isPointerDown = true;
         isSwiping = false; // Reset state
+        gestureStart = { x: e.clientX, y: e.clientY, time: Date.now() };
         startX = e.clientX;
         startY = e.clientY;
         
@@ -336,17 +338,29 @@ function setupGalleryInteraction(gallery) {
             const direction = diffX > 0 ? 1 : -1; // 1 = next, -1 = prev
             changeSlideByOffset(gallery, direction);
         }
+        
+        // Reset gesture state
+        setTimeout(() => {
+            gestureStart = null;
+            isSwiping = false;
+        }, 100);
     };
 
     // Attach unified events
     if (window.PointerEvent) {
-        gallery.addEventListener('pointerdown', onPointerDown);
-        gallery.addEventListener('pointerup', onPointerUp);
-        // We don't strictly need pointermove for this simple implementation
+        gallery.addEventListener('pointerdown', onPointerDown, { passive: true });
+        gallery.addEventListener('pointerup', onPointerUp, { passive: true });
+        gallery.addEventListener('pointercancel', () => {
+            isPointerDown = false;
+            gestureStart = null;
+            isSwiping = false;
+        }, { passive: true });
     } else {
         // Fallback for older touch devices
         gallery.addEventListener('touchstart', (e) => {
             if(e.changedTouches.length < 1) return;
+            // Reset state before new gesture
+            gestureStart = null;
             onPointerDown({
                 clientX: e.changedTouches[0].clientX,
                 clientY: e.changedTouches[0].clientY,
@@ -362,6 +376,8 @@ function setupGalleryInteraction(gallery) {
                 clientY: e.changedTouches[0].clientY,
                 pointerId: 0 // dummy
             });
+            // Ensure state is reset after gesture completes
+            setTimeout(() => { gestureStart = null; }, 50);
         }, {passive: true});
     }
 

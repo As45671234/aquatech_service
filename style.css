@@ -927,18 +927,22 @@ body.light .why-us {
   width: 100%;
   aspect-ratio: 16/9; /* Maintain aspect for map */
   margin-bottom: 1rem;
+  min-height: 250px; /* Prevent collapse */
 }
 
 @media (max-width: 768px) {
   .map-card {
      /* Allow map to fit screen */
      overflow: hidden; 
-     padding: 0.5rem !important; 
+     padding: 1rem !important; 
   }
   .map-container {
-     /* Remove fixed min-width to allow scaling down */
+     /* Remove aspect-ratio on mobile, use explicit height */
+     aspect-ratio: auto;
      width: 100%; 
      min-width: 0;
+     height: 300px; /* Fixed height for mobile */
+     min-height: 280px;
   }
 }
 
@@ -946,6 +950,7 @@ body.light .why-us {
   width: 100%;
   height: 100%;
   border-radius: 12px;
+  min-height: 250px; /* Prevent shrinking */
   /* background: #f8fbff; */ /* Optional background */
 }
 
