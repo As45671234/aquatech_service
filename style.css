@@ -928,9 +928,10 @@ body.light .why-us {
 .map-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9; /* Maintain aspect for map */
+  aspect-ratio: 1/1; /* Square aspect for better map display */
   margin-bottom: 1rem;
   min-height: 250px; /* Prevent collapse */
+  max-height: 400px; /* Limit height on desktop */
 }
 
 @media (max-width: 768px) {
