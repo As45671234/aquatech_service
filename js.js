@@ -276,7 +276,7 @@ function setupGalleryInteraction(gallery) {
     let startY = 0;
     let isPointerDown = false;
     let isSwiping = false;
-    let gestureStart = null; // Track gesture state
+    let swipeTimeout = null;
     
     // Prevent native drag
     gallery.querySelectorAll('img').forEach(img => {
@@ -305,67 +305,75 @@ function setupGalleryInteraction(gallery) {
         // Only left click or touch
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         
+        // Clear any pending timeout
+        if (swipeTimeout) {
+            clearTimeout(swipeTimeout);
+            swipeTimeout = null;
+        }
+        
+        // Reset everything at the start of new gesture
+        isSwiping = false;
         isPointerDown = true;
-        isSwiping = false; // Reset state
-        gestureStart = { x: e.clientX, y: e.clientY, time: Date.now() };
         startX = e.clientX;
         startY = e.clientY;
-        
-        // Ensure we capture pointer for swiping
-        if (gallery.setPointerCapture) {
-            gallery.setPointerCapture(e.pointerId);
-        }
     };
 
     const onPointerUp = (e) => {
         if (!isPointerDown) return;
-        isPointerDown = false;
         
-        // Release capture
-        if (gallery.releasePointerCapture) {
-            gallery.releasePointerCapture(e.pointerId);
-        }
-
         const endX = e.clientX;
         const endY = e.clientY;
         const diffX = startX - endX;
         const diffY = startY - endY;
         
+        // Reset pointer down immediately
+        isPointerDown = false;
+        
         // Detect Horizontal Swipe
-        // Sensitivity: > 20px difference (increased sensitivity from 30px)
+        // Sensitivity: > 20px difference
         if (Math.abs(diffX) > 20 && Math.abs(diffX) > Math.abs(diffY)) {
             isSwiping = true; // Mark as swipe to prevent click
             const direction = diffX > 0 ? 1 : -1; // 1 = next, -1 = prev
             changeSlideByOffset(gallery, direction);
-        }
-        
-        // Reset gesture state
-        setTimeout(() => {
-            gestureStart = null;
+            
+            // Try to prevent click on native events
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+            
+            // Clear isSwiping flag after animation completes
+            swipeTimeout = setTimeout(() => {
+                isSwiping = false;
+                swipeTimeout = null;
+            }, 200);
+        } else {
+            // Not a swipe, clear immediately
             isSwiping = false;
-        }, 100);
+        }
     };
 
     // Attach unified events
     if (window.PointerEvent) {
-        gallery.addEventListener('pointerdown', onPointerDown, { passive: true });
-        gallery.addEventListener('pointerup', onPointerUp, { passive: true });
+        gallery.addEventListener('pointerdown', onPointerDown);
+        gallery.addEventListener('pointerup', onPointerUp);
         gallery.addEventListener('pointercancel', () => {
             isPointerDown = false;
-            gestureStart = null;
             isSwiping = false;
-        }, { passive: true });
+            if (swipeTimeout) {
+                clearTimeout(swipeTimeout);
+                swipeTimeout = null;
+            }
+        });
     } else {
         // Fallback for older touch devices
         gallery.addEventListener('touchstart', (e) => {
             if(e.changedTouches.length < 1) return;
-            // Reset state before new gesture
-            gestureStart = null;
             onPointerDown({
                 clientX: e.changedTouches[0].clientX,
                 clientY: e.changedTouches[0].clientY,
                 pointerType: 'touch',
-                pointerId: 0 // dummy
+                pointerId: 0,
+                preventDefault: () => e.preventDefault(),
+                stopPropagation: () => e.stopPropagation()
             });
         }, {passive: true});
 
@@ -374,10 +382,12 @@ function setupGalleryInteraction(gallery) {
             onPointerUp({
                 clientX: e.changedTouches[0].clientX,
                 clientY: e.changedTouches[0].clientY,
-                pointerId: 0 // dummy
+                pointerId: 0,
+                preventDefault: () => {},
+                stopPropagation: () => {}
             });
-            // Ensure state is reset after gesture completes
-            setTimeout(() => { gestureStart = null; }, 50);
+        }, {passive: true});
+    }
         }, {passive: true});
     }
 
