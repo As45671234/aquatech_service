@@ -326,6 +326,12 @@ function setupGalleryInteraction(gallery) {
         if (!isPointerDown) return;
         endX = e.clientX;
         endY = e.clientY;
+
+        // Fix for iOS Safari:
+        // If swipe is horizontal, prevent default to stop page scroll and avoid event cancellation
+        if (Math.abs(endX - startX) > Math.abs(endY - startY) && Math.abs(endX - startX) > 5) {
+            if (e.cancelable) e.preventDefault();
+        }
     };
 
     const onPointerUp = (e) => {
@@ -362,7 +368,7 @@ function setupGalleryInteraction(gallery) {
     // Attach unified events
     if (window.PointerEvent) {
         gallery.addEventListener('pointerdown', onPointerDown);
-        gallery.addEventListener('pointermove', onPointerMove, {passive: true});
+        gallery.addEventListener('pointermove', onPointerMove, {passive: false});
         gallery.addEventListener('pointerup', onPointerUp);
         gallery.addEventListener('pointercancel', () => {
             isPointerDown = false;
@@ -391,9 +397,11 @@ function setupGalleryInteraction(gallery) {
             onPointerMove({
                 clientX: e.changedTouches[0].clientX,
                 clientY: e.changedTouches[0].clientY,
-                pointerId: 0
+                pointerId: 0,
+                cancelable: e.cancelable,
+                preventDefault: () => e.preventDefault()
             });
-        }, {passive: true});
+        }, {passive: false});
 
         gallery.addEventListener('touchend', (e) => {
             if(e.changedTouches.length < 1) return;
