@@ -839,3 +839,51 @@ function closeLightbox() {
 function initLightbox() {
     // No-op, managed by openLightbox logic
 }
+
+// ==================== YANDEX METRIKA CONVERSION TRACKING ====================
+// Функция для отслеживания целей Яндекс.Метрики
+function trackYandexGoal(goalName) {
+    if (typeof ym !== 'undefined') {
+        // Замените XXXXXXXX на ваш реальный номер счётчика
+        ym(XXXXXXXX, 'reachGoal', goalName);
+        console.log('Yandex Goal tracked:', goalName);
+    }
+}
+
+// Инициализация отслеживания конверсий при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Отслеживание кликов по кнопке "Каталог"
+    document.querySelectorAll('a[href="#products"], a[href="products.html"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            trackYandexGoal('catalog_click');
+        });
+    });
+
+    // Отслеживание кликов по кнопке "Сервисный отдел" и WhatsApp
+    document.querySelectorAll('a[href*="wa.me"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            trackYandexGoal('whatsapp_click');
+        });
+    });
+
+    // Отслеживание кликов по email
+    document.querySelectorAll('a[href^="mailto:"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            trackYandexGoal('email_click');
+        });
+    });
+
+    // Отслеживание кликов по телефону
+    document.querySelectorAll('a[href^="tel:"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            trackYandexGoal('phone_click');
+        });
+    });
+
+    // Отслеживание кликов по социальным сетям
+    document.querySelectorAll('.social-btn.instagram').forEach(btn => {
+        btn.addEventListener('click', function() {
+            trackYandexGoal('instagram_click');
+        });
+    });
+});
